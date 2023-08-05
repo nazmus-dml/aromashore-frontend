@@ -1,0 +1,251 @@
+.full-screen {
+    background: #f5f5f5;
+    /* position: relative;
+    height: 100vh; */
+}
+
+.sign-in-section {
+    width: 100%;
+    max-width: 420px;
+    margin: 0px auto;
+    margin-top: 45px;
+    margin-bottom: 45px;
+    /* position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%); */
+}
+
+/* Sign Up  */
+.sign-up-section {
+    width: 100%;
+    max-width: 600px;
+    margin: 0px auto;
+    margin-top: 45px;
+    margin-bottom: 45px;
+    /* position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%); */
+}
+
+.sign-up__card {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: 0.25rem;
+    -webkit-border-radius: 0.25rem;
+    -moz-border-radius: 0.25rem;
+    -ms-border-radius: 0.25rem;
+    -o-border-radius: 0.25rem;
+}
+
+.sign-up__card .card {
+    border: 1px solid rgba(0, 0, 0, .125);
+}
+
+.sign-up__card-body {
+    padding: 30px;
+}
+
+.sign-up__card .card-header {
+    border-radius: 6px 6px 0px 0px;
+    padding: 40px 20px;
+    -webkit-border-radius: 6px 6px 0px 0px;
+    -moz-border-radius: 6px 6px 0px 0px;
+    -ms-border-radius: 6px 6px 0px 0px;
+    -o-border-radius: 6px 6px 0px 0px;
+}
+
+.bg-img {
+    /* background: url('../img/kashful.jpg') center; */
+}
+
+.sign-up__card .card-body .form-control {
+    background: #fafafa;
+    height: 46px;
+    padding: 10px 16px;
+    line-height: 1.3333333;
+    font-size: 14px;
+}
+
+.my-btn {
+    display: block;
+    width: 100%;
+    background-color: #e6e9ec;
+    border-color:#8ABC41;
+    transition: all 0.5s ease;
+    position: relative;
+    color: #FFFFFF;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -ms-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    padding: 0.6rem 1.2rem;
+}
+
+.my-btn .fab {
+    position: absolute;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    -webkit-transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -o-transform: translateY(-50%);
+}
+
+.my-btn:hover {
+    background-color: #8ABC41;
+    border-color: #8ABC41;
+}
+
+.my-btn:focus {
+    background-color: #8ABC41 !important;
+    border-color: #8ABC41 !important;
+    outline-color: #8ABC41 !important;
+    outline: none;
+    box-shadow: 0 0 2px #8ABC41 !important;
+}
+
+.my-btn:active {
+    background-color: #8ABC41 !important;
+    border-color: #8ABC41 !important;
+    outline-color: #8ABC41 !important;
+    outline: none;
+}
+
+.btn-fb {
+    color: #fff;
+    background-color: #3b5998;
+    border-color: #344e86;
+}
+
+.btn-fb:hover,
+.btn-fb:focus,
+.btn-fb:active {
+    color: #fff !important;
+    background-color: #30497c !important;
+    border-color: #263961 !important;
+}
+
+.btn-g {
+    background-color: #dfe4e8;
+    border-color: #dfe4e8;
+    color: #000 !important;
+}
+
+.btn-g:hover,
+.btn-g:focus,
+.btn-g:active {
+    color: #000 !important;
+    background-color: #ececec !important;
+    border-color: #5f6970 !important;
+}
+
+.login-em {
+    width: 110px;
+    margin: 0 auto;
+    color: #acb2b5;
+    position: relative;
+    text-align: center;
+}
+
+.login-em::before {
+    position: absolute;
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: #dfe4e8;
+    top: 50%;
+    width: 70px;
+    left: -80px;
+}
+
+.login-em::after {
+    top: 50%;
+    width: 70px;
+    right: -80px;
+    position: absolute;
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: #dfe4e8;
+}
+
+.login-social {
+    width: 80px;
+    margin: 0 auto;
+    color: #acb2b5;
+    position: relative;
+}
+
+.login-social--signup {
+    width: 180px;
+}
+
+.login-social::before {
+    position: absolute;
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: #dfe4e8;
+    top: 50%;
+    width: 50px;
+    left: -60px;
+}
+
+.login-social::after {
+    top: 50%;
+    width: 50px;
+    right: -60px;
+    position: absolute;
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: #dfe4e8;
+}
+
+.sign-up__card .myform-control {
+    height: 38px;
+    padding: 7px 16px;
+    background: #ffffff;
+    line-height: 1.3333333;
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    color: #495057;
+    width: 100%;
+    display: block;
+    -webkit-transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    -moz-transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    -ms-transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    -o-transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    -webkit-border-radius: 0.25rem;
+    -moz-border-radius: 0.25rem;
+    -ms-border-radius: 0.25rem;
+    -o-border-radius: 0.25rem;
+}
+
+.myform-group {
+    margin-bottom: 1.2rem;
+}
+
+a.my-link {
+    /* color: #007bff; */
+    text-decoration: none;
+    background-color: transparent;
+}
+
+.myform-check-input {
+    margin-right: 10px;
+}
