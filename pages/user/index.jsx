@@ -73,7 +73,7 @@ export default function Index({ user, customerprofile }) {
 							</div>
 						</div>
 					</div>
-					<nav>
+					<nav style={{ backgroundColor: "#f0f0f0" }}>
 						<TabSelector isActive={selectedTab === "profile"} onClick={() => setSelectedTab("profile")}>
 							Personal Information
 						</TabSelector>

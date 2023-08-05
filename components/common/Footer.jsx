@@ -44,9 +44,7 @@ export default function Footer() {
 			<div className='footer-one'>
 				<div className='footer-one__header subscribe'>
 					<div className='footer-one__header__logo'>
-						<Link href='/'>
-							<Image src='/app/assets/images/logo-white.png' alt='Logo' width={70} height={61} />
-						</Link>
+						<Image src='/app/assets/images/logo-white.png' alt='Logo' width={70} height={61} />
 					</div>
 					<div className='footer-one__header__newsletter'>
 						<span>Subscribe Newsletter:</span>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Cookies from "js-cookie";
 import App from "next/app";
+import Router from "next/router";
 import { AppStore } from "../store/AppStore";
+import "../styles/Home.module.css";
 import "../styles/globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "slick-carousel/slick/slick.css";
@@ -164,6 +166,7 @@ function MyApp({
   const logout = useCallback(() => {
     Cookies.remove("user");
     setUser(null);
+    Router.push('/');
     // setCompanyInfo(null);
     // window.location = "/";
   }, []);

@@ -9,13 +9,12 @@ import Cookies from "js-cookie";
 import { fetchCustomerTypes, getprofileByCustomer, updateprofileByCustomer } from "../../services/webCustomerService";
 
 export default function OrderInfo({ user, profile = [] }) {
-	const [orderList, setOrderList] = useState([]);
+	const [orderList, setOrderList] = useState(profile);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		setOrderList(profile);
 		setIsLoading(false);
-	}, [profile]);
+	}, []);
 
 	return (
 		<>
