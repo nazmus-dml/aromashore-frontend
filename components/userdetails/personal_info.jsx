@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faImage } from "@fortawesome/free-solid-svg-icons";
-import { getprofileByCustomer, updateprofileByCustomer } from "../../services/webCustomerService";
 import Cookies from "js-cookie";
+import React, {useEffect, useState} from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import {ToastContainer, toast} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {updateprofileByCustomer} from "../../services/webCustomerService";
 
 const groupTypeList = [
 	{ value: 1, name: "Group 1" },
@@ -62,14 +60,14 @@ const locationList = [
 ];
 
 const getNameFromListById = (list, id) => {
+
 	let data = {
 		name: ""
 	};
-	data = list.find((al) => {
-		al.value === Number(id);
-		return true;
-	});
-	return data.name;
+
+  data = list.find((al) => al.value === Number(id));
+
+	return data?.name || "";
 };
 
 export default function PersonalInfo({ user, profile }) {
@@ -158,12 +156,20 @@ export default function PersonalInfo({ user, profile }) {
 
 	const handlePersonalProfileSubmit = () => {
 		try {
+
+      // console.log('bean:',bean);
+      // console.log('user:',user);
+      // console.log('profile:',profile);
+
+      // return;
+
 			let result = updateprofileByCustomer({
 				...bean,
 				subscription: JSON.stringify(bean.subscription),
 				order_info_notification: JSON.stringify(bean.order_info_notification),
 				...user
 			});
+
 			result.then((res) => {
 				toast(res.data.appMessage);
 				if (res.data.appStatus) {
@@ -205,16 +211,23 @@ export default function PersonalInfo({ user, profile }) {
 		<>
 			<ToastContainer />
 			<div className='bg-light'>
-				{/* <div className="row pb-3">
-          <div className="col-12 col-md-12 col-lg-12"> */}
+				
+        {/* Profile Information */}
 				<div className='card border-0 bg-transparent'>
 					<div className='card-header'>
 						<h5 className='mb-0'>Profile Information</h5>
 					</div>
+
 					<div className='card-body'>
+            
+            {/* parent */}
 						<div className='row'>
-							<div className='col-12 col-md-7'>
-								<div className='card'>
+
+							{/* child 1 */}
+              <div className='col-12 col-md-7'>
+								{/* 1.1 - Personal Info */}
+                <div className='card'>
+                  {/* 1.1 - Personal Info Icon */}
 									<div className='card-header d-flex align-items-center justify-content-between'>
 										Personal Info
 										<i
@@ -223,38 +236,51 @@ export default function PersonalInfo({ user, profile }) {
 												setShowPersonalInfoModal(true);
 											}}></i>
 									</div>
+
+                  {/* 1.1 - Personal Info Table */}
 									<div className='card-body'>
 										<table className='table'>
 											<tbody>
+                        {/* fn + ln */}
 												<tr>
 													<th>First Name</th>
 													<td>{bean.firstname}</td>
 													<th>Last Name</th>
 													<td>{bean.lastname}</td>
 												</tr>
-												<tr>
+												
+                        {/* comp name */}
+                        <tr>
 													<th>Company Name</th>
 													<td colSpan={3}>{bean.company}</td>
 												</tr>
-												<tr>
+												
+                        {/* group + race */}
+                        <tr>
 													<th>Group</th>
 													<td>{getNameFromListById(groupTypeList, bean.group)}</td>
 													<th>Race</th>
 													<td>{getNameFromListById(raceTypeList, bean.race)}</td>
 												</tr>
-												<tr>
+												
+                        {/* zone + location */}
+                        <tr>
 													<th>Zone</th>
 													<td>{getNameFromListById(zoneList, bean.zone)}</td>
 													<th>Location</th>
 													<td>{getNameFromListById(locationList, bean.location)}</td>
 												</tr>
-												<tr>
+												
+                        {/* service + carrier */}
+                        <tr>
 													<th>Service</th>
 													<td>{getNameFromListById(serviceTypeList, bean.service)}</td>
 													<th>Carrier</th>
 													<td>{getNameFromListById(carrierTypeList, bean.carrier)}</td>
 												</tr>
-												<tr>
+												
+                        {/* limit + taxID */}
+                        <tr>
 													<th>Limit</th>
 													<td>{bean.limit}</td>
 													<th>Tax ID</th>
@@ -265,6 +291,7 @@ export default function PersonalInfo({ user, profile }) {
 									</div>
 								</div>
 
+                {/* 1.2 - Contact Info */}
 								<div className='card mt-3'>
 									<div className='card-header d-flex align-items-center justify-content-between'>
 										Contact Info
@@ -319,6 +346,7 @@ export default function PersonalInfo({ user, profile }) {
 								</div>
 							</div>
 
+              {/* child 2 */}
 							<div className='col-12 col-md-5'>
 								<div className='card'>
 									<div className='card-header'>Change Password</div>
@@ -399,15 +427,15 @@ export default function PersonalInfo({ user, profile }) {
 						</div>
 					</div>
 				</div>
-				{/* </div>
-        </div> */}
+			
 			</div>
 
 			<Modal show={showPersonalInfoModal} onHide={() => setShowPersonalInfoModal(false)} size='lg'>
 				<Modal.Header closeButton>
 					<Modal.Title>Address</Modal.Title>
 				</Modal.Header>
-				<Modal.Body>
+				
+        <Modal.Body>
 					<div className='row'>
 						<div className='col-12 col-md-4'>
 							<div className='mb-3'>
@@ -586,7 +614,8 @@ export default function PersonalInfo({ user, profile }) {
 					</div>
 					{/* <pre>{JSON.stringify(bean, null, 2)}</pre> */}
 				</Modal.Body>
-				<Modal.Footer>
+				
+        <Modal.Footer>
 					<Button
 						variant='secondary'
 						onClick={() => {
