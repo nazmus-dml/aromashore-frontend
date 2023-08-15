@@ -4,7 +4,9 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import {ToastContainer, toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {updateprofileByCustomer} from "../../services/webCustomerService";
+import {validatePasswordChange} from "../../models/user";
+import {changeProfilePassword, updateprofileByCustomer} from "../../services/webCustomerService";
+
 
 const groupTypeList = [
 	{ value: 1, name: "Group 1" },
@@ -19,11 +21,13 @@ const raceTypeList = [
 	{ value: 4, name: "Asian" },
 	{ value: 5, name: "Native Hawaiian or Other Pacific Islander" }
 ];
+
 const carrierTypeList = [
 	{ value: 1, name: "UPS" },
 	{ value: 2, name: "FedEx" },
 	{ value: 3, name: "USPS" }
 ];
+
 const termsTypeList = [
 	{ value: 1, name: "COD Cheque" },
 	{ value: 2, name: "COD Cash" },
@@ -33,6 +37,7 @@ const termsTypeList = [
 	{ value: 6, name: "30 Days Net" },
 	{ value: 7, name: "On Receipt" }
 ];
+
 const zoneList = [
 	{ value: 1, name: "Zone" },
 	{ value: 2, name: "COD Cash" },
@@ -42,6 +47,7 @@ const zoneList = [
 	{ value: 6, name: "30 Days Net" },
 	{ value: 7, name: "On Receipt" }
 ];
+
 const serviceTypeList = [
 	{ value: 1, name: "Ground" },
 	{ value: 2, name: "2nd Day" },
@@ -49,6 +55,7 @@ const serviceTypeList = [
 	{ value: 4, name: "5 Day" },
 	{ value: 5, name: "7 Day" }
 ];
+
 const locationList = [
 	{ value: 1, name: "Location" },
 	{ value: 2, name: "COD Cash" },
@@ -156,13 +163,6 @@ export default function PersonalInfo({ user, profile }) {
 
 	const handlePersonalProfileSubmit = () => {
 		try {
-
-      // console.log('bean:',bean);
-      // console.log('user:',user);
-      // console.log('profile:',profile);
-
-      // return;
-
 			let result = updateprofileByCustomer({
 				...bean,
 				subscription: JSON.stringify(bean.subscription),
@@ -195,16 +195,24 @@ export default function PersonalInfo({ user, profile }) {
 
 	const handleChangePasswordSubmit = async (e) => {
 		e.preventDefault();
-		const errorsCopy = validate({
-			newPassword: bean.newPassword
-			// repeat_password:bean.repeat_password,
+		const errorsCopy = validatePasswordChange({
+			previousPassword: bean.previousPassword,
+			newPassword: bean.newPassword,
+			repeatPassword:bean.repeat_password,
 		});
 		setErrors(errorsCopy);
 		if (errorsCopy) return;
 		try {
-			let { data } = await changeProfilePassword({ password: bean.newPassword }, user);
+      const reqBody = {
+        "oldpassword": bean.previousPassword,
+        "password":  bean.newPassword
+      }
+
+			let { data } = await changeProfilePassword(reqBody, user);
 			toast(data.appMessage);
-		} catch (error) {}
+		} catch (error) {
+      console.log('error:',error)
+    }
 	};
 
 	return (
@@ -346,9 +354,10 @@ export default function PersonalInfo({ user, profile }) {
 								</div>
 							</div>
 
-              {/* child 2 */}
+              {/* child 2 - Change Password + Other Info */}
 							<div className='col-12 col-md-5'>
-								<div className='card'>
+								{/* Change Password */}
+                <div className='card'>
 									<div className='card-header'>Change Password</div>
 									<div className='card-body'>
 										<form onSubmit={handleChangePasswordSubmit}>
@@ -390,6 +399,8 @@ export default function PersonalInfo({ user, profile }) {
 										</form>
 									</div>
 								</div>
+
+                {/* Other Info */}
 								<div className='card mt-3'>
 									<div className='card-header'>Other Info</div>
 									<div className='card-body'>
