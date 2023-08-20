@@ -1,17 +1,20 @@
-import React, { useState } from "react";
+import {faImage} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import Layout from "../../layouts/Layout";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage } from "@fortawesome/free-solid-svg-icons";
-import { updateprofilePicture, getprofileByCustomer } from "../../services/webCustomerService";
-import { TabPanel, useTabs } from "react-headless-tabs";
-import PersonalInfo from "../../components/userdetails/personal_info";
-import OrderInfo from "../../components/userdetails/order_info";
-import CardInfo from "../../components/userdetails/card_info";
+import React, {useState} from "react";
+import {TabPanel, useTabs} from "react-headless-tabs";
 import CustomerCCProfile from "../../components/userdetails/CustomerCCProfile";
+import OrderInfo from "../../components/userdetails/order_info";
+import PersonalInfo from "../../components/userdetails/personal_info";
+import Layout from "../../layouts/Layout";
+import {getprofileByCustomer, updateprofilePicture} from "../../services/webCustomerService";
 
 export default function Index({ user, customerprofile }) {
-	const [profileImgUrl, setProfileImgUrl] = useState(customerprofile?.image ? customerprofile?.image : "/app/assets/images/avatar.jpg");
+	const [profileImgUrl, setProfileImgUrl] = useState(
+    customerprofile?.customerprofile?.image 
+    ? customerprofile?.customerprofile?.image 
+    : "/app/assets/images/avatar.jpg"
+  );
 
 	const previewFile = (e) => {
 		let file = e.target.files[0];
@@ -19,6 +22,7 @@ export default function Index({ user, customerprofile }) {
 		if (file) {
 			reader.onloadend = (e) => {
 				setProfileImgUrl(e.target.result.toString());
+
 				updateprofilePicture({ image: e.target.result }, user)
 					.then((res) => {
 						console.log(res);
