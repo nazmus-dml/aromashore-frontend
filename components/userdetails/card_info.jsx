@@ -1,17 +1,25 @@
-import React, { useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faImage } from "@fortawesome/free-solid-svg-icons";
+import {faEdit} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Cookies from "js-cookie";
-import { getprofileByCustomer, updateprofileByCustomer } from "../../services/webCustomerService";
+import React, {useEffect, useState} from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import {ToastContainer, toast} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import {getCountriesList} from "../../services/publicContentsService";
+import {updateprofileByCustomer} from "../../services/webCustomerService";
 
 export default function CardInfo({ user, profile = [] }) {
 	const carddata = Cookies.get("card_data");
 
-	const [ini_card_name, ini_card_number, ini_card_cvc, ini_card_expiry] = carddata ? JSON.parse(carddata) : [null, null, null, null];
+	const {ini_card_name, ini_card_number, ini_card_cvc, ini_card_expiry} 
+    = carddata ? JSON.parse(carddata) 
+    : {
+      ini_card_name:null, 
+      ini_card_number:null, 
+      ini_card_cvc:null, 
+      ini_card_expiry:null
+    };
 
 	const [CardName, setCardName] = useState(ini_card_name || null);
 	const [CardNumber, setCardNumber] = useState(ini_card_number || null);
@@ -23,19 +31,27 @@ export default function CardInfo({ user, profile = [] }) {
 	const [bean, setBean] = useState({
 		...profile
 	});
-	const handleChange = (e) => {
+	
+  const handleChange = (e) => {
 		bean[e.target.name] = e.target.value;
 		setBean({ ...bean });
 	};
 
 	const Cookies_set = () => {
-		const arr = [CardName, CardNumber, CardCvc, CardExpiry];
+		// const arr = [CardName, CardNumber, CardCvc, CardExpiry];
+		const arr = {CardName, CardNumber, CardCvc, CardExpiry};
 		const data = JSON.stringify(arr);
+    console.log('Cookies');
+    console.log('data:',data);
+    // console.log('profile:',profile);
+    // console.log('bean:',bean);
 		Cookies.set("card_data", data);
 	};
 
 	const handleSubmit = () => {
 		Cookies_set();
+
+    return
 		try {
 			let result = updateprofileByCustomer({
 				...bean,
@@ -50,9 +66,63 @@ export default function CardInfo({ user, profile = [] }) {
 			});
 		} catch (error) {}
 	};
+
+  // =========================================================================
+
+  useEffect(() => {
+
+    console.log('user:',user)
+    
+    getCountriesList()
+			.then((response) => {
+				if (response.status === 200 && !response.data["appStatus"]) {
+					// setCCProfileCountryList([]);
+          console.log('empty country list')
+				} 
+
+				// console.log('data:',response.data);
+
+        else {
+					const tempCountryList = response.data["appData"];
+					// console.log('tempCountryList:',tempCountryList);
+
+          /*
+					const customCountryList = [];
+					tempCountryList.map((cl) => {
+						const country = { value: cl.id, label: `${cl.name} (${cl.code})` };
+						customCountryList.push(country);
+						return true;
+					});
+          */
+
+          const customCountryList = tempCountryList.map((cl) => {
+            return { 
+              value: cl.id, 
+              label: `${cl.name}`
+            }
+          });
+
+					// setCCProfileCountryList(customCountryList);
+          // console.log('customCountryList:',customCountryList)
+				}
+        
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+   
+    // =============================
+
+    
+  
+    
+  }, [])
+  
+
 	return (
 		<>
 			<ToastContainer />
+
 			<div className='card border-0 bg-transparent'>
 				<div className='card-header'>
 					<h5 className='mb-0'>Debit/Credit Card Information</h5>
@@ -64,7 +134,9 @@ export default function CardInfo({ user, profile = [] }) {
 						<FontAwesomeIcon icon={faEdit} />
 					</span>
 				</div>
-				<div className='card-body'>
+				
+        {/* table */}
+        <div className='card-body'>
 					<table className='table mb-0'>
 						<thead>
 							<tr>
@@ -90,19 +162,21 @@ export default function CardInfo({ user, profile = [] }) {
 						) : (
 							<tbody>
 								<tr>
-									<td>--</td>
-									<td>--</td>
-									<td>--</td>
-									<td>--</td>
-									<td>--</td>
+									<td>-empty-</td>
+									<td>-empty-</td>
+									<td>-empty-</td>
+									<td>-empty-</td>
+									<td>-empty-</td>
 								</tr>
 							</tbody>
 						)}
 					</table>
-					<Modal show={isdcCardshow} onHide={() => setIsdcCardshow(false)} dialogClassName='modal-w-cdcard base-modal modal-dialog modal-dialog-centered'>
+					
+          <Modal show={isdcCardshow} onHide={() => setIsdcCardshow(false)} dialogClassName='modal-w-cdcard base-modal modal-dialog modal-dialog-centered'>
 						<Modal.Header closeButton>
 							<Modal.Title>Debit/Credit Card Profile</Modal.Title>
 						</Modal.Header>
+
 						<Modal.Body>
 							<div className='row'>
 								<div className='col-12 col-md-6'>
@@ -138,16 +212,21 @@ export default function CardInfo({ user, profile = [] }) {
 									</div>
 								</div>
 							</div>
-							<h6>Billing Address</h6>
+							
+              <h6>Billing Address</h6>
 							<div className='row'>
+
+                {/* Address */}
 								<div className='col-12 col-md-12'>
 									<div className='mb-3'>
-										<label htmlFor='email' className='form-label'>
+										<label htmlFor='address' className='form-label'>
 											Address
 										</label>
-										<input className='form-control' id='email' type='text' name='email' value={bean.email ? bean.email : ""} onChange={handleChange} placeholder='Address' />
+										<input className='form-control' id='address' type='text' name='address' value={bean.address ? bean.address : ""} onChange={handleChange} placeholder='Address' />
 									</div>
 								</div>
+
+                {/* Country */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
 										<label htmlFor='country' className='form-label'>
@@ -156,40 +235,49 @@ export default function CardInfo({ user, profile = [] }) {
 										<input type='text' className='form-control' id='country' name='country' value={bean.country ? bean.country : ""} onChange={handleChange} placeholder='Country' />
 									</div>
 								</div>
+
+                {/* State */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
 										<label htmlFor='country' className='form-label'>
 											State
 										</label>
-										<input type='text' className='form-control' id='country' name='country' value={bean.country ? bean.country : ""} onChange={handleChange} placeholder='Country' />
+										<input type='text' className='form-control' id='state' name='state' value={bean.state ? bean.state : ""} onChange={handleChange} placeholder='State' />
 									</div>
 								</div>
+
+                {/* City */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
 										<label htmlFor='country' className='form-label'>
 											City
 										</label>
-										<input type='text' className='form-control' id='country' name='country' value={bean.country ? bean.country : ""} onChange={handleChange} placeholder='Country' />
+										<input type='text' className='form-control' id='city' name='city' value={bean.city ? bean.city : ""} onChange={handleChange} placeholder='City' />
 									</div>
 								</div>
+
+                {/* Zip Code */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
 										<label htmlFor='country' className='form-label'>
 											Zip Code
 										</label>
-										<input type='text' className='form-control' id='country' name='country' value={bean.country ? bean.country : ""} onChange={handleChange} placeholder='Country' />
+										<input type='text' className='form-control' id='zipCode' name='zipCode' value={bean.zipCode ? bean.zipCode : ""} onChange={handleChange} placeholder='Zip Code' />
 									</div>
 								</div>
+
+                {/* Phone */}
 								<div className='col-12 col-md-8'>
 									<div className='mb-3'>
 										<label htmlFor='country' className='form-label'>
 											Phone No
 										</label>
-										<input type='text' className='form-control' id='country' name='country' value={bean.country ? bean.country : ""} onChange={handleChange} placeholder='Country' />
+										<input type='text' className='form-control' id='phone' name='phone' value={bean.phone ? bean.phone : ""} onChange={handleChange} placeholder='Phone' />
 									</div>
 								</div>
 							</div>
 						</Modal.Body>
+
 						<Modal.Footer>
 							<Button
 								variant='secondary'
@@ -198,7 +286,8 @@ export default function CardInfo({ user, profile = [] }) {
 								}}>
 								Close
 							</Button>
-							<Button variant='primary' onClick={handleSubmit}>
+							
+              <Button variant='primary' onClick={handleSubmit}>
 								Update
 							</Button>
 						</Modal.Footer>

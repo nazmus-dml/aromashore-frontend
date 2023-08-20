@@ -8,6 +8,7 @@ import { TabPanel, useTabs } from "react-headless-tabs";
 import PersonalInfo from "../../components/userdetails/personal_info";
 import OrderInfo from "../../components/userdetails/order_info";
 import CardInfo from "../../components/userdetails/card_info";
+import CustomerCCProfile from "../../components/userdetails/CustomerCCProfile";
 
 export default function Index({ user, customerprofile }) {
 	const [profileImgUrl, setProfileImgUrl] = useState(customerprofile?.image ? customerprofile?.image : "/app/assets/images/avatar.jpg");
@@ -90,7 +91,8 @@ export default function Index({ user, customerprofile }) {
 							<PersonalInfo user={user} profile={customerprofile} />
 						</TabPanel>
 						<TabPanel hidden={selectedTab !== "cards"}>
-							<CardInfo user={user} profile={customerprofile.customerprofile.cc_profile} />
+							{/* <CardInfo user={user} profile={customerprofile.customerprofile.cc_profile} /> */}
+							<CustomerCCProfile customerId={user.uid} />
 						</TabPanel>
 						<TabPanel hidden={selectedTab !== "orders"}>
 							<OrderInfo user={user} />
