@@ -1,5 +1,6 @@
 import http from "./httpService";
 import apiUrl from "../config";
+import {headerWithUserAuthToken} from "./authService";
 const apiEndPoint = apiUrl + "/web/customer/getall/category";
 
 export function fetchCustomerTypes() {
@@ -46,5 +47,12 @@ export function changeProfilePassword(data,user) {
         Authorization: user.token_id,
       },
     }
+  );
+}
+
+export function getOrderHistoryByCustomerId(customerId) {
+  return http.get(
+    apiUrl + `/web/customer/order/getall/${customerId}`,
+    headerWithUserAuthToken()
   );
 }
