@@ -67,9 +67,9 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 		phone_number: false
 	});
 
-	// useEffect(() => {
-	// 	setccProfileList(creditCard);
-	// }, [creditCard]);
+  useEffect(() => {
+    setccProfileList(creditCard);
+	}, []);
 
 	useEffect(() => {
     getCountriesList()
@@ -310,7 +310,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 		
     updateCcProfile(customerId,payload)
 			.then(function (response) {
-				console.log(response);
+				// console.log(response);
 				if (response.status === 200 && response.data["appStatus"]) {
 					toast.success(response.data["appMessage"], {
 						position: "top-right",
@@ -335,7 +335,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 	};
 
 	const deleteCardInfo = (cardIndex) => {
-		const updatedCardList = ccProfileList.filter((elm, indx) => {
+		const updatedCardList = ccProfileList?.filter((elm, indx) => {
 			return indx !== cardIndex;
 		});
 		const payload = { cc_profile: JSON.stringify(updatedCardList) };
@@ -369,7 +369,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 	const markAsActive = (cardIndex) => {
 		const updatedCardList = ccProfileList;
 		updatedCardList.map((elm, indx) => {
-			console.log(elm);
+			// console.log(elm);
 			if (indx === cardIndex) {
 				elm.status = 1;
 			} else {
@@ -447,9 +447,9 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 									<th width={120}></th>
 								</tr>
 							</thead>
-							{ccProfileList.length > 0 ? (
+							{ccProfileList?.length > 0 ? (
 								<tbody>
-									{ccProfileList.map((ccProfile, indx) => {
+									{ccProfileList?.map((ccProfile, indx) => {
 										const { card_type, name_on_card, card_number, status } = ccProfile;
 										return (
 											<tr key={indx}>
