@@ -1,19 +1,36 @@
-import React, { useState, useEffect } from "react";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import { toast, ToastContainer } from "react-toastify";
+import React, {useEffect, useState} from "react";
+// import Modal from "react-bootstrap/Modal";
+// import Button from "react-bootstrap/Button";
+// import { toast, ToastContainer } from "react-toastify";
+import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faImage } from "@fortawesome/free-solid-svg-icons";
-import Cookies from "js-cookie";
-import { fetchCustomerTypes, getprofileByCustomer, updateprofileByCustomer } from "../../services/webCustomerService";
+import {getOrderHistoryByCustomerId} from "../../services/webCustomerService";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faEdit, faImage } from "@fortawesome/free-solid-svg-icons";
+// import Cookies from "js-cookie";
+// import { fetchCustomerTypes, getprofileByCustomer, updateprofileByCustomer } from "../../services/webCustomerService";
+
+const ORDER_STATUS = {
+  0 : 'Pending',
+  1 : 'In Progress',
+  2 : 'Done',
+}
 
 export default function OrderInfo({ user, profile = [] }) {
-	const [orderList, setOrderList] = useState(profile);
+	// const [orderList, setOrderList] = useState(profile);
+	const [orderList, setOrderList] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
 		setIsLoading(false);
+
+    getOrderHistoryByCustomerId(user.uid)
+      .then(res => res.data)
+      .then(data => {
+        // console.log('data:',data);
+        setOrderList([...data.appData])
+      })
+
 	}, []);
 
 	return (
@@ -43,10 +60,10 @@ export default function OrderInfo({ user, profile = [] }) {
 										{orderList.map((order) => (
 											<tr key={order.id}>
 												<td>{order.order_no}</td>
-												<td>--</td>
-												<td>--</td>
-												<td>--</td>
-												<td>--</td>
+												<td>{order.order_date}</td>
+												<td>{order.amount}</td>
+												<td>{ORDER_STATUS[order.status]}</td>
+  											<td></td>
 											</tr>
 										))}
 									</tbody>

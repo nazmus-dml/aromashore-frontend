@@ -25,7 +25,7 @@ export default function Index({ user, customerprofile }) {
 
 				updateprofilePicture({ image: e.target.result }, user)
 					.then((res) => {
-						console.log(res);
+						// console.log(res);
 					})
 					.catch((error) => {
 						console.log("data", error);
@@ -96,7 +96,7 @@ export default function Index({ user, customerprofile }) {
 						</TabPanel>
 						<TabPanel hidden={selectedTab !== "cards"}>
 							{/* <CardInfo user={user} profile={customerprofile.customerprofile.cc_profile} /> */}
-							<CustomerCCProfile customerId={user.uid} />
+							<CustomerCCProfile customerId={user.uid} creditCard={JSON.parse(customerprofile?.customerprofile?.cc_profile)}/>
 						</TabPanel>
 						<TabPanel hidden={selectedTab !== "orders"}>
 							<OrderInfo user={user} />
