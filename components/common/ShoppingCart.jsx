@@ -41,11 +41,7 @@ const ShoppingCart = ({ isCartOpen }) => {
 									cart.map((product, i) => (
 										<div key={i} className='cus_cart-item'>
 											<div className='cus_cart-item__image'>
-												{product.productimages[0] ? (
-													<Image src={product.productimages[0]?.image} alt={product.productimages[0]?.name} height={50} width={50} />
-												) : (
-													<Image src='https://storage.googleapis.com/proudcity/mebanenc/uploads/2021/03/placeholder-image.png' alt='Placeholder' height={50} width={50} />
-												)}
+												{product.productimages[0] ? <Image src={product.productimages[0]?.image} alt={product.productimages[0]?.name} height={50} width={50} /> : <Image src='/app/assets/images/placeholder-image.png' alt='Placeholder' height={50} width={50} />}
 											</div>
 											<div className='cus_cart-item__info'>
 												{product.units.map((unit, i) => {
