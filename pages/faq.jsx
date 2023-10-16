@@ -24,18 +24,20 @@ function Faq({ appData }) {
 					<div className='row'>
 						<div className='col-12'>
 							<div className='accordion' id='faqAccordianList'>
-								{appData.map((item) => {
-									return (
-										<div className='card mb-2' key={item.id}>
-											<div className='card-header' data-bs-toggle='collapse' data-bs-target={`#faq-answer-section_${item.id}`}>
-												<b>{item.question}</b>
-											</div>
-											<div id={`faq-answer-section_${item.id}`} className='collapse' data-bs-parent='#faqAccordianList'>
-												<div className='card-body'>{parse(item.answer)}</div>
-											</div>
-										</div>
-									);
-								})}
+								{appData != null
+									? appData.map((item) => {
+											return (
+												<div className='card mb-2' key={item.id}>
+													<div className='card-header' data-bs-toggle='collapse' data-bs-target={`#faq-answer-section_${item.id}`}>
+														<b>{item.question}</b>
+													</div>
+													<div id={`faq-answer-section_${item.id}`} className='collapse' data-bs-parent='#faqAccordianList'>
+														<div className='card-body'>{parse(item.answer)}</div>
+													</div>
+												</div>
+											);
+									  })
+									: appData}
 							</div>
 						</div>
 					</div>
@@ -46,19 +48,18 @@ function Faq({ appData }) {
 }
 
 export async function getStaticProps() {
+	let data = { appData: null };
 	try {
-		const {
-			data: { appStatus, appMessage, appData }
-		} = await axios.get(apiUrl + "/public/get/faq");
+		data = await axios.get(apiUrl + "/public/get/faq");
 		return {
 			props: {
-				appData: appData
+				appData: data.data.appData
 			}
 		};
 	} catch (error) {
 		return {
 			props: {
-				appData: []
+				appData: null
 			}
 		};
 	}

@@ -1,11 +1,12 @@
 {
 	"name": "ecommerce-frontend",
 	"private": true,
+	"main": "server.js",
 	"scripts": {
-		"dev": "next dev",
+		"dev": "node server.js",
 		"build": "next build",
-		"start": "next start",
-		"lint": "next lint"
+		"prod_start": "NODE_ENV=production node server.js",
+		"export": "next export"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.11.1",

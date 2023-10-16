@@ -194,12 +194,12 @@ function MyApp({
 export default MyApp;
 
 MyApp.getInitialProps = async (context) => {
-  console.log("_APP -- getServerSideProps");
+  console.log("_APP -- getServerSideProps", context);
   const pageProps = await App.getInitialProps(context);
   let userInfo = null;
   try {
-    userInfo = context.ctx.req.cookies?.user
-      ? JSON.parse(context.ctx.req.cookies?.user)
+    userInfo = context.ctx.req?.cookies?.user
+      ? JSON.parse(context.ctx.req?.cookies?.user)
       : null;
 
     return {

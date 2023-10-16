@@ -22,7 +22,7 @@ function PrivacyPolicy({ appData }) {
 				</div>
 				<div className='container'>
 					<div className='row'>
-						<div className='col-12'>{parse(appData.description)}</div>
+						<div className='col-12'>{appData != null ? parse(appData.description) : appData}</div>
 					</div>
 				</div>
 			</>
@@ -31,19 +31,19 @@ function PrivacyPolicy({ appData }) {
 }
 
 export async function getStaticProps() {
+	let data = { appData: null };
 	try {
-		const {
-			data: { appStatus, appMessage, appData }
-		} = await axios.get(apiUrl + "/public/get/privecy");
+		data = await axios.get(apiUrl + "/public/get/privecy");
+		console.log("privacy----------->>", data.data);
 		return {
 			props: {
-				appData: appData
+				appData: data.data.appData
 			}
 		};
 	} catch (error) {
 		return {
 			props: {
-				appData: []
+				appData: null
 			}
 		};
 	}
