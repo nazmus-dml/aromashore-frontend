@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
-import SlickSlider from "react-slick";
+import Slider from "react-slick";
 import Link from "next/link";
 import axios from "axios";
 import apiUrl from "../../config";
 import Product from "../shop/Product";
+import { Swiper, SwiperSlide } from "swiper/react";
+import Image from "next/image";
+import "swiper/css";
 
 const NextArrow = ({ onClick }) => {
 	return (
@@ -21,15 +24,13 @@ const PrevArrow = ({ onClick }) => {
 	);
 };
 
-export default function RelatedProduct({ categoryId = null }) {
+export default function PopularProduct({ categoryId = null }) {
 	const settings = {
-		dot: false,
+		dots: true,
 		infinite: true,
 		speed: 500,
-		slidesToShow: 4,
-		slidesToScroll: 1,
-		nextArrow: <NextArrow />,
-		prevArrow: <PrevArrow />
+		slidesToShow: 1,
+		slidesToScroll: 1
 	};
 
 	const [productList, setProductList] = useState([]);
@@ -37,26 +38,23 @@ export default function RelatedProduct({ categoryId = null }) {
 
 	useEffect(() => {
 		axios
-			.post(apiUrl + "/web/getall/categorywise/product", {
-				pageSize: 10,
-				pageNo: 0,
-				categoryId: categoryId
-			})
+			.get(apiUrl + "/web/getall-by-popularity")
 			.then((response) => {
+				console.log("/web/getall-by-popularity", response)
 				if (response.data.appStatus) {
-					setProductList(response.data.appData.rows);
+					setProductList(response.data.appData);
 				} else {
 					setProductList([]);
 				}
 				setIsLoading(false);
 			});
-	}, [categoryId]);
+	}, []);
 
 	return (
 		<div className='product-slide'>
 			<div className='container'>
 				<div className='section-title -center' style={{ marginBottom: "1.875em" }}>
-					<h2>Related Product</h2>
+					<h2>Popular Product</h2>
 				</div>
 				<div className='row'>
 					<div className='col-12'>
@@ -68,11 +66,22 @@ export default function RelatedProduct({ categoryId = null }) {
 										Loading Related Products...
 									</div>
 								) : (
-									<SlickSlider {...settings}>
-										{productList.map((product) => {
-											return <Product key={product.id} product={product} />;
-										})}
-									</SlickSlider>
+									<Swiper slidesPerView={1} autoplay={true}>
+										{productList.map((product, index) => {
+											console.log(product, index);
+											return (
+												<SwiperSlide key={product.id}>
+													{product.productimages[0] ? <Image src={product.productimages[0]?.image} alt={product.productimages[0]?.name} width={250} height={250} /> : <Image src='/app/assets/images/200.svg' alt='Placeholder' width={250} height={250} />}
+												</SwiperSlide>
+											)
+										}
+										)}
+									</Swiper>
+									// <Slider  {...settings}>
+									// 	{productList.map((product) => {
+									// 		return <Product key={product.id} product={product} />;
+									// 	})}
+									// </Slider >
 								)}
 							</div>
 						</div>

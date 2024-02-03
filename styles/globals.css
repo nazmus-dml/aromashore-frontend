@@ -1233,7 +1233,7 @@ button:hover .cart__quantity {
   background-position: 100% 100%, 0 100%;
   background-repeat: no-repeat;
   transition: background-size 400ms;
-  margin-left: 20px;
+  /* margin-left: 20px; */
 }
 
 .reseller h2:hover {
@@ -1320,11 +1320,13 @@ button:hover .cart__quantity {
 
 /* new code added by syeda */
 .footer-bg {
-  background-image: url(../public/app/assets/images/ft3.jpg);
+  /* background-image: url(../public/app/assets/images/ft3.jpg); */
   background-size: cover;
   background-repeat: no-repeat;
   width: 100%;
-  padding: 2em;
+  padding: 3em 0 1em 0;
+  border-top: 1px dashed #999;
+  background-color: #f1f1f1;
 }
 
 .footer-one__body .company-info {

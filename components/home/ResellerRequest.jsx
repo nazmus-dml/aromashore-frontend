@@ -43,7 +43,7 @@ export default function ResellerRequest() {
 			<div
 				className='cta -style-1'
 				style={{
-					backgroundImage: 'url("/app/assets/images/cta/CTAOne/1.png")'
+					backgroundImage: 'url("/app/assets/images/cta/CTAOne/2.jpg")'
 				}}>
 				<div className='container'>
 					<div className='row'>
@@ -53,28 +53,46 @@ export default function ResellerRequest() {
 									<h2>Reseller Request</h2>
 								</div>
 								<form onSubmit={handleSubmit} className='cta__form__detail validated-form'>
-									<div className='input-validator'>
-										<input type='text' placeholder='First Name' name='firstname' value={bean.firstname} onChange={handleChange} required='required' />
+									<div className="row">
+										<div className="col-12 col-md-6">
+											<div className='input-validator'>
+												<input type='text' placeholder='First Name' name='firstname' value={bean.firstname} onChange={handleChange} required='required' />
+											</div>
+										</div>
+										<div className="col-12 col-md-6">
+											<div className='input-validator'>
+												<input type='text' placeholder='Last Name' name='lastname' value={bean.lastname} onChange={handleChange} required='required' />
+											</div>
+										</div>
+										<div className="col-12 col-md-12">
+											<div className='input-validator'>
+												<input type='text' placeholder='Company Name' name='company' value={bean.company} onChange={handleChange} required='required' />
+											</div>
+										</div>
+										<div className="col-12 col-md-6">
+											<div className='input-validator'>
+												<input type='text' name='contact' value={bean.contact} onChange={handleChange} placeholder='Contact' required='required' />
+											</div>
+										</div>
+										<div className="col-12 col-md-6">
+											<div className='input-validator'>
+												<input type='text' placeholder='Email' name='email' value={bean.email} onChange={handleChange} required='required' />
+											</div>
+										</div>
+										<div className="col-12 col-md-6">
+											<div className='input-validator'>
+												<textarea placeholder='Message' name='message' value={bean.message} onChange={handleChange} className='form-control' rows='3' />
+											</div>
+										</div>
+										<div className="col-12 col-md-6">
+											<div className='input-validator'>
+												<textarea placeholder='Comments' name='comments' value={bean.comments} onChange={handleChange} className='form-control' rows='3' />
+											</div>
+										</div>
+										<div className="col-12 text-end">
+											<button className='btn -light-red'>Send</button>
+										</div>
 									</div>
-									<div className='input-validator'>
-										<input type='text' placeholder='Last Name' name='lastname' value={bean.lastname} onChange={handleChange} required='required' />
-									</div>
-									<div className='input-validator'>
-										<input type='text' placeholder='Company Name' name='company' value={bean.company} onChange={handleChange} required='required' />
-									</div>
-									<div className='input-validator'>
-										<input type='text' name='contact' value={bean.contact} onChange={handleChange} placeholder='Contact' required='required' />
-									</div>
-									<div className='input-validator'>
-										<input type='text' placeholder='Email' name='email' value={bean.email} onChange={handleChange} required='required' />
-									</div>
-									<div className='input-validator'>
-										<textarea placeholder='Message' name='message' value={bean.message} onChange={handleChange} className='form-control' rows='3' />
-									</div>
-									<div className='input-validator'>
-										<textarea placeholder='Comments' name='comments' value={bean.comments} onChange={handleChange} className='form-control' rows='3' />
-									</div>
-									<button className='btn -light-red'>Send</button>
 								</form>
 							</div>
 						</div>

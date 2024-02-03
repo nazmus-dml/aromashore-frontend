@@ -7,12 +7,11 @@ import Link from "next/link";
 
 function ReturnPolicy({ appData }) {
 	return (
-		<Layout title='Shop Page'>
+		<Layout title='Return Policy'>
 			<>
 				<div className='breadcrumb'>
-					<div className='container mt-3'>
-						<h3>Return Policy</h3>
-						<ul className='p-0'>
+					<div className='container mt-2'>
+						<ul className='p-0 mb-2'>
 							<li>
 								<Link href='/'>Home</Link>
 							</li>
@@ -20,7 +19,13 @@ function ReturnPolicy({ appData }) {
 						</ul>
 					</div>
 				</div>
-				<div className='container'>
+				<div className='container mb-5'>
+					<div className="row">
+						<div className="col-12">
+							<h2>Return Policy</h2>
+							<hr />
+						</div>
+					</div>
 					<div className='row'>
 						<div className='col-12'>{appData != null ? parse(appData.description) : appData}</div>
 					</div>

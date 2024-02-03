@@ -7,9 +7,8 @@ function Wishlist() {
 	return (
 		<Layout>
 			<div className='breadcrumb'>
-				<div className='container mt-3'>
-					<h2>Wishlist</h2>
-					<ul className='p-0'>
+				<div className='container mt-2'>
+					<ul className='p-0 mb-2'>
 						<li>Home</li>
 						<li>Shop</li>
 						<li className='active'>Wishlist</li>
@@ -88,7 +87,7 @@ function Wishlist() {
 					</div>
 				</div>
 			</div>
-			<InstagramSlider />
+			{/* <InstagramSlider /> */}
 		</Layout>
 	);
 }

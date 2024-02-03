@@ -120,7 +120,7 @@ export async function getServerSideProps(context) {
 			};
 		}
 		const { data: profileData } = await getprofileByCustomer(user);
-		// console.log("profileData.appData --------> ", profileData.appData);
+		console.log("profileData.appData --------> ", profileData.appData);
 		return {
 			props: {
 				customerprofile: profileData.appData,

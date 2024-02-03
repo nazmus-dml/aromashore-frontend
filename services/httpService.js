@@ -8,7 +8,7 @@ axios.interceptors.response.use(null, (error) => {
   if (!expectedError) {
     console.log('error:', error)
     console.log('error.response:', error.response)
-    window.alert("Unexpect Error Occurd");
+    // window.alert("Unexpect Error Occurd");
   }
   return Promise.reject(error);
 });

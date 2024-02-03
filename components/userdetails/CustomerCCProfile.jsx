@@ -1,10 +1,10 @@
 import moment from "moment";
-import {useEffect, useState} from "react";
-import {Modal} from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
 import Select from "react-select";
-import {toast} from "react-toastify";
-import {bankingCardValidate} from "../../models/bankingCardProfile";
-import {getCitiesByStateId, getCountriesList, getStatesByCountryId, updateCcProfile} from "../../services/publicContentsService";
+import { toast } from "react-toastify";
+import { bankingCardValidate } from "../../models/bankingCardProfile";
+import { getCitiesByStateId, getCountriesList, getStatesByCountryId, updateCcProfile } from "../../services/publicContentsService";
 import MuixDatePicker from "../common/DatePicker";
 
 
@@ -67,27 +67,27 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 		phone_number: false
 	});
 
-  useEffect(() => {
-    setccProfileList(creditCard);
+	useEffect(() => {
+		setccProfileList(creditCard);
 	}, []);
 
 	useEffect(() => {
-    getCountriesList()
+		getCountriesList()
 			.then(function (response) {
 				// console.log(response);
 				if (response.status === 200 && !response.data["appStatus"]) {
 					setCCProfileCountryList([]);
 				} else {
-          const tempCountryList = response.data["appData"];
+					const tempCountryList = response.data["appData"];
 					// console.log(tempCountryList);
-          
+
 					const customCountryList = [];
 					tempCountryList.map((cl) => {
 						const country = { value: cl.id, label: `${cl.name}` };
 						customCountryList.push(country);
 						return true;
 					});
-         
+
 					setCCProfileCountryList(customCountryList);
 				}
 			})
@@ -216,7 +216,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 		// const code = nameNCode[1].toString().slice(0, -1); saif
 		const code = value;
 		if (value) {
-      getStatesByCountryId(value)
+			getStatesByCountryId(value)
 				.then(function (response) {
 					// console.log(response);
 					if (response.status === 200 && !response.data["appStatus"]) {
@@ -252,8 +252,8 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 		// const code = nameNCode[1].toString().slice(0, -1);
 		const code = value;
 		if (value) {
-		
-      getCitiesByStateId(value)
+
+			getCitiesByStateId(value)
 				.then(function (response) {
 					// console.log(response);
 					if (response.status === 200 && !response.data["appStatus"]) {
@@ -293,22 +293,22 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 
 	const addUpdateCCProfile = () => {
 
-    const errorsCopy = bankingCardValidate(ccProfile);
-		
-		if (errorsCopy) {
-      console.log('errorsCopy:',errorsCopy)
-      toast.error('Please fill-up all the fields accordingly', {
-        position: "top-right",
-        autoClose: 5000
-      });
+		const errorsCopy = bankingCardValidate(ccProfile);
 
-      return;
-    };
+		if (errorsCopy) {
+			console.log('errorsCopy:', errorsCopy)
+			toast.error('Please fill-up all the fields accordingly', {
+				position: "top-right",
+				autoClose: 5000
+			});
+
+			return;
+		};
 
 		const previousccList = [...ccProfileList, ccProfile];
 		const payload = { cc_profile: JSON.stringify(previousccList) };
-		
-    updateCcProfile(customerId,payload)
+
+		updateCcProfile(customerId, payload)
 			.then(function (response) {
 				// console.log(response);
 				if (response.status === 200 && response.data["appStatus"]) {
@@ -339,8 +339,8 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 			return indx !== cardIndex;
 		});
 		const payload = { cc_profile: JSON.stringify(updatedCardList) };
-		
-    updateCcProfile(customerId,payload)
+
+		updateCcProfile(customerId, payload)
 			.then(function (response) {
 				// console.log(response);
 				if (response.status === 200 && response.data["appStatus"]) {
@@ -378,8 +378,8 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 			return true;
 		});
 		const payload = { cc_profile: JSON.stringify(updatedCardList) };
-		
-    updateCcProfile(customerId,payload)
+
+		updateCcProfile(customerId, payload)
 			.then(function (response) {
 				// console.log(response);
 				if (response.status === 200 && response.data["appStatus"]) {
@@ -554,7 +554,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 									value={ccProfile.expiration_date}
 									setValue={(value) => handleCCProfileChange({ target: { name: "expiration_date", value: value } })}
 								/>
-                <p>Insert Date Picker</p>
+								<p>Insert Date Picker</p>
 							</div>
 						</div>
 						{/* <div className='col-12 col-md-4'>

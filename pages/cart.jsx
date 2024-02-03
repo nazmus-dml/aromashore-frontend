@@ -17,9 +17,8 @@ function Cart() {
 	return (
 		<Layout title='Cart'>
 			<div className='breadcrumb'>
-				<div className='container mt-3'>
-					<h2>Cart</h2>
-					<ul className='p-0'>
+				<div className='container mt-2'>
+					<ul className='p-0 mb-2'>
 						<li>
 							<Link href='/'>Home</Link>
 						</li>
@@ -213,7 +212,7 @@ function Cart() {
 				</div>
 			</div>
 			{/* <RelatedProduct /> */}
-			<InstagramSlider />
+			{/* <InstagramSlider /> */}
 		</Layout>
 	);
 }

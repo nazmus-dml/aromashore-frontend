@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import Layout from "../../layouts/Layout";
-import RelatedProduct from "../../components/common/RelatedProduct";
-import InstagramSlider from "../../components/common/InstagramSlider";
+import PopularProduct from "../../components/common/PopularProduct";
+import SimilarProduct from "../../components/common/SimilarProduct";
+import ProductBundle from "../../components/shop/ProductBundle";
 import apiUrl from "../../config";
 import { AppStore } from "../../store/AppStore";
 import { Modal, Button } from "react-bootstrap";
@@ -74,46 +75,137 @@ function ProductDetail() {
 	const router = useRouter();
 	const query = router.query;
 	const [productDetails, setProductDetails] = useState(null);
+	const [productReturnPolicyDetails, setProductReturnPolicyDetails] = useState(null);
 
-	let totalReviewers = 0;
+	const [avgRatingRange, setAvgRatingRange] = useState([]);
+	const [avgNonRatingRange, setAvgNonRatingRange] = useState([]);
+	const [totalReviewers, setTotalReviewers] = useState(0);
+
+	const [selectedRatings, setSelectedRatings] = useState(0);
+	const [reviewText, setReviewText] = useState('');
+
+	let totalReviewersNumber = 0;
 	let totalRating = 0;
-	let avgRatingRange = [];
-	let avgNonRatingRange = [];
+	let avgRatingRangeArray = [];
+	let avgNonRatingRangeArray = [];
+
+	const ratingsList = [
+		{ value: 1, label: 'far fa-star fa-lg text-secondary', hoverLabel: 'fas fa-star fa-lg text-warning' },
+		{ value: 2, label: 'far fa-star fa-lg text-secondary', hoverLabel: 'fas fa-star fa-lg text-warning' },
+		{ value: 3, label: 'far fa-star fa-lg text-secondary', hoverLabel: 'fas fa-star fa-lg text-warning' },
+		{ value: 4, label: 'far fa-star fa-lg text-secondary', hoverLabel: 'fas fa-star fa-lg text-warning' },
+		{ value: 5, label: 'far fa-star fa-lg text-secondary', hoverLabel: 'fas fa-star fa-lg text-warning' }
+	];
 
 	useEffect(() => {
 		axios.get(apiUrl + "/web/get/product/" + Number(query.productid)).then((response) => {
 			if (response.data.appStatus) {
 				const prodDetails = response.data.appData;
+				console.log(prodDetails);
 				setProductDetails(prodDetails);
 				if (prodDetails.productproperties && prodDetails.productproperties.length > 0) {
 					setProductpro(prodDetails.productproperties[0]);
 				}
 
 				if (prodDetails.productreviews && prodDetails.productreviews.length > 0) {
+					setTotalReviewers(prodDetails.productreviews.length);
 					prodDetails.productreviews.forEach(function (item) {
-						totalReviewers++;
+						totalReviewersNumber++;
 						totalRating = totalRating + item.ratings;
 					});
 				}
+				console.log('totalReviewersNumber -----', totalReviewersNumber)
 				let avgRating = 0;
 				let totalRatingFrac = 0;
-				if (totalReviewers) {
-					let frac = totalRating % totalReviewers;
-					avgRating = (totalRating - frac) / totalReviewers;
+				if (totalReviewersNumber) {
+					let frac = totalRating % totalReviewersNumber;
+					avgRating = (totalRating - frac) / totalReviewersNumber;
 					totalRatingFrac = frac / 10;
 				}
-				avgRatingRange = Array.from({ length: avgRating }, (_, index) => {
+				avgRatingRangeArray = Array.from({ length: avgRating }, (_, index) => {
+					console.log('avgRatingRange -----', index)
 					return index + 1;
 				});
-				avgNonRatingRange = Array.from({ length: 5 - avgRating }, (_, index) => {
+				avgNonRatingRangeArray = Array.from({ length: 5 - avgRating }, (_, index) => {
+					console.log('avgNonRatingRange -----', index)
 					return index + 1;
 				});
+				setAvgRatingRange(avgRatingRangeArray);
+				setAvgNonRatingRange(avgNonRatingRangeArray);
 				setIsLoading(false);
 			} else {
 				setProductDetails(null);
 			}
+			// setTotalReviewers(totalReviewersNumber);
+		});
+
+		axios.get(apiUrl + "/public/get/return-policy").then((response) => {
+			console.log(response);
+			if (response.data.appStatus) {
+				const prodReturnPolicyDetails = response.data.appData;
+				console.log(prodReturnPolicyDetails);
+				setProductReturnPolicyDetails(prodReturnPolicyDetails)
+			} else {
+				setProductReturnPolicyDetails(null);
+			}
+		}).catch((error) => {
+			console.log(error);
+			setProductReturnPolicyDetails(null);
 		});
 	}, []);
+
+	const getStars = (rating) => {
+		switch (rating) {
+			case 1:
+				return (<>
+					<i className='fas fa-star fa-lg text-warning'></i>
+					<i className='far fa-star text-secondary'></i>
+					<i className='far fa-star text-secondary'></i>
+					<i className='far fa-star text-secondary'></i>
+					<i className='far fa-star text-secondary'></i>
+				</>);
+			case 2:
+				return (<>
+					<i className='fas fa-star text-warning'></i>
+					<i className='fas fa-star text-warning'></i>
+					<i className='far fa-star text-secondary'></i>
+					<i className='far fa-star text-secondary'></i>
+					<i className='far fa-star text-secondary'></i>
+				</>);
+			case 3:
+				return (<>
+					<i className='fas fa-star text-warning'></i>
+					<i className='fas fa-star text-warning'></i>
+					<i className='fas fa-star text-warning'></i>
+					<i className='far fa-star text-secondary'></i>
+					<i className='far fa-star text-secondary'></i>
+				</>);
+			case 4:
+				return (<>
+					<i className='fas fa-star text-warning'></i>
+					<i className='fas fa-star text-warning'></i>
+					<i className='fas fa-star text-warning'></i>
+					<i className='fas fa-star text-warning'></i>
+					<i className='far fa-star text-secondary'></i>
+				</>);
+			case 5:
+				return (<>
+					<i className='fas fa-star text-warning'></i>
+					<i className='fas fa-star text-warning'></i>
+					<i className='fas fa-star text-warning'></i>
+					<i className='fas fa-star text-warning'></i>
+					<i className='fas fa-star text-warning'></i>
+				</>);
+			default:
+				return (<>
+					<i className='far fa-star text-secondary'></i>
+					<i className='far fa-star text-secondary'></i>
+					<i className='far fa-star text-secondary'></i>
+					<i className='far fa-star text-secondary'></i>
+					<i className='far fa-star text-secondary'></i>
+				</>);
+		}
+	}
 
 	const handleChangeProperty = (e) => {
 		let findproductpro = productDetails.productproperties.find((item) => item.id == e.target.value);
@@ -136,13 +228,24 @@ function ProductDetail() {
 	// 	};
 	// };
 
+	const getSelectedRatings = (ratings) => {
+		setSelectedRatings(ratings);
+	}
+
+	const submitReview = () => {
+		const payload = {
+			ratings: selectedRatings,
+			review: reviewText
+		};
+		console.log(payload);
+	}
+
 	return (
 		<>
 			<Layout>
 				<div className='breadcrumb'>
-					<div className='container mt-3'>
-						<h2>Shop</h2>
-						<ul className='p-0'>
+					<div className='container mt-2'>
+						<ul className='mb-2 p-0'>
 							<li>
 								<Link href='/'>Home</Link>
 							</li>
@@ -162,7 +265,7 @@ function ProductDetail() {
 						<div className='shop'>
 							<div className='container mt-5'>
 								<div className='row'>
-									<div className='col-12 col-sm-5'>
+									<div className='col-12 col-md-6'>
 										<div className='product-detail__slide-two'>
 											<div className='product-detail__slide-two__big'>
 												{productDetails.productimages && productDetails.productimages.length > 0 ? (
@@ -190,37 +293,43 @@ function ProductDetail() {
 											<div className='product-detail__slide-two__small'></div>
 										</div>
 									</div>
-									<div className='col-12 col-sm-7'>
+									<div className='col-12 col-md-6'>
 										<div>
-											<h5>
-												Price:&nbsp;$
-												{productpro ? (
-													productpro.sale_price > 0 ? (
-														<>
-															{productpro.sale_price}&nbsp;&nbsp;
-															<del>${productpro.price}</del>
-														</>
+											<div className="d-flex justify-content-between">
+												<div>
+													<h2>{productDetails.name}</h2>
+													<h6 className='text-secondary mb-1'>
+														{productDetails.productcategory ? productDetails.productcategory.name : "Anonymous"}
+													</h6>
+													<h6 className='text-secondary mb-2'>SKU: {productpro ? (
+														productpro.variation_no ? (
+															productpro.variation_no
+														) : (
+															productDetails.product_no
+														)
 													) : (
-														productpro.price
-													)
-												) : (
-													0
-												)}
-											</h5>
-											<div className='product-detail__content__header__comment-block'>
-												<div className='rate'>
-													{avgRatingRange.map((item, i) => {
-														return <i key={i} className='fas fa-star'></i>;
-													})}
-													{avgNonRatingRange.map((item, i) => {
-														return <i key={i} className='far fa-star'></i>;
-													})}
-													<span>&nbsp;({totalReviewers})</span>
+														productDetails.product_no
+													)}</h6>
 												</div>
-												<p>{totalReviewers} Review</p>
-												<button href='#' onClick={handleClick} className='review-btn'>
+												<div className="d-flex flex-column justify-content-end">
+													<div onClick={handleClick}>
+														{
+															avgRatingRange.map((item, i) => <i key={i} className='fas fa-star fa-lg text-warning'></i>)
+														}
+														{
+															avgNonRatingRange.map((item, i) => <i key={i} className='far fa-star fa-lg text-secondary'></i>)
+														}
+														{/* <span>&nbsp;({totalReviewers})</span> */}
+													</div>
+													<div className="text-end mt-3">
+														<i className='fab fa-facebook-square fa-2x me-2'></i>
+														<i className='fab fa-twitter-square fa-2x'></i>
+													</div>
+													{/* <p>{totalReviewers} Review</p>
+												<button href='#'className='review-btn'>
 													Write a Review
-												</button>
+												</button> */}
+												</div>
 											</div>
 											<hr />
 											<div className='d-flex justify-content-between'>
@@ -233,13 +342,11 @@ function ProductDetail() {
 														}}
 														className='product-dropdown'>
 														{productDetails.productproperties &&
-															productDetails.productproperties.map((item, i) => {
-																return (
-																	<option key={i} value={item.id}>
-																		{item.size} {item.size_unit}
-																	</option>
-																);
-															})}
+															productDetails.productproperties.map((item, i) =>
+																<option key={i} value={item.id}>
+																	{item.size} {item.size_unit}
+																</option>
+															)}
 													</select>
 												</span>
 												<div className='quantity-controller -border -round'>
@@ -263,11 +370,30 @@ function ProductDetail() {
 														<i className='fas fa-plus fa-sm'></i>
 													</div>
 												</div>
+												<h5>
+													$
+													{productpro ? (
+														productpro.sale_price > 0 ? (
+															<>
+																{productpro.sale_price * qty}&nbsp;&nbsp;
+																<del className="text-danger">${productpro.price}</del>
+															</>
+														) : (
+															productpro.price * qty
+														)
+													) : (
+														0
+													)}
+												</h5>
+
 											</div>
 											<hr />
 											<div className='product-detail__content'>
 												<div className='product-detail__content__footer'>
 													<div className='product-detail__controller__box'>
+														<a className='wishbtn -round -white' href='#'>
+															<i className='fas fa-heart'></i>
+														</a>
 														<div
 															className='cart-main'
 															onClick={() =>
@@ -281,9 +407,6 @@ function ProductDetail() {
 															}>
 															<AddToCart />
 														</div>
-														<a className='wishbtn -round -white' href='#'>
-															<i className='fas fa-heart'></i>
-														</a>
 														{/* {cartStatus ? (
 													<button>Adding...</button>
 												) : (
@@ -306,126 +429,106 @@ function ProductDetail() {
 													<i className='fas fa-heart'></i>
 												</a> */}
 													</div>
-													<br />
-													<h2>{productDetails.name}</h2>
-													<p className='mb-0'>Brand: {productDetails.productbrand ? productDetails.productbrand.name : "Annonimus"}</p>
-													<p>Product code: {productDetails.product_no}</p>
 													<hr />
-													<div className='product-detail__content__tab'>
-														<ul className='tab-content__header'>
-															<li onClick={() => setTabType(1)} className='tab-switcher'>
-																Description
-															</li>
-															<li onClick={() => setTabType(2)} className='tab-switcher'>
-																Shipping & Returns
-															</li>
-															<li ref={ref} onClick={() => setTabType(3)} className='tab-switcher'>
-																Reviews ( 03 )
-															</li>
-														</ul>
-														<div id='allTabsContainer'>
-															{tabType == 1 && <div className='tab-content__item -description'>{productDetails.productdetail ? parse(productDetails.productdetail.description) : "--"}</div>}
-															{tabType == 2 && (
-																<div className='tab-content__item -ship'>
-																	<h5>
-																		<span>Ship to</span> New york
-																	</h5>
-																	<ul>
-																		<li>
-																			Standard Shipping on order over 0kg - 5kg.
-																			<span>+10.00</span>
-																		</li>
-																		<li>
-																			Heavy Goods Shipping on oder over 5kg-10kg .<span>+20.00</span>
-																		</li>
-																	</ul>
-																	<h5>Delivery &amp; returns</h5>
-																	<p>We diliver to over 100 countries around the word. For full details of the delivery options we offer, please view our Delivery information.</p>
-																</div>
-															)}
-															{tabType == 3 && (
-																<div className='tab-content__item -review'>
-																	<form>
-																		<h5>Write a review</h5>
-																		<div className='row'>
-																			<div className='col-12 col-md-6'>
-																				<div className='input-validator'>
-																					<input type='text' name='name' placeholder='Name' />
-																				</div>
-																			</div>
-																			<div className='col-12 col-md-6'>
-																				<div className='input-validator'>
-																					<input type='text' name='email' placeholder='Email' />
-																				</div>
-																			</div>
-																			<div className='col-12'>
-																				<div className='input-validator'>
-																					<textarea name='message' placeholder='Message' rows='5'></textarea>
-																				</div>
-																				<span className='input-error'></span>
-																			</div>
-																			<div className='col-12'>
-																				<button className='btn -dark'>Write a review</button>
-																				<Modal show={isModalOpen} onHide={() => setModalOpen(false)}>
-																					<Modal.Header closeButton>
-																						<Modal.Title>Write a Review</Modal.Title>
-																					</Modal.Header>
-																					<Modal.Body>
-																						<div className='tab-content__item -review'>
-																							<div className='review'>
-																								<div className='review__header'>
-																									<div className='review__header__avatar'>
-																										<form>
-																											<div className='row'>
-																												<div className='col-12 col-md-6'>
-																													<div className='input-validator'>
-																														<input className='review-inputs' type='text' name='name' placeholder='Name' />
-																													</div>
-																												</div>
-																												<div className='col-12 col-md-6'>
-																													<div className='input-validator'>
-																														<input className='review-inputs' type='text' name='email' placeholder='Email' />
-																													</div>
-																												</div>
-																												<div className='col-12'>
-																													<div className='input-validator'>
-																														<textarea className='review-textarea' name='message' placeholder='Message' rows='5'></textarea>
-																													</div>
-																													<span className='input-error'></span>
-																												</div>
-																												<div className='col-12'>
-																													<button className='btn -dark'>Write a review</button>
-																												</div>
-																											</div>
-																										</form>
-																									</div>
-																								</div>
-																							</div>
-																						</div>
-																					</Modal.Body>
-																					<Modal.Footer>
-																						<Button variant='secondary' onClick={() => setModalOpen(false)}>
-																							Close
-																						</Button>
-																						{/* Additional buttons or actions */}
-																					</Modal.Footer>
-																				</Modal>
-																			</div>
-																		</div>
-																	</form>
-																</div>
-															)}
-														</div>
-													</div>
+													<ProductBundle productDetails={productDetails} productId={Number(query.productid)} />
 												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div className="row">
+									<div className="col-12 col-sm-12">
+										<div className='product-detail__content__tab'>
+											<ul className='tab-content__header'>
+												<li onClick={() => setTabType(1)} className='tab-switcher'>
+													Description
+												</li>
+												<li onClick={() => setTabType(2)} className='tab-switcher'>
+													Shipping & Returns
+												</li>
+												<li ref={ref} onClick={() => setTabType(3)} className='tab-switcher'>
+													Reviews ({totalReviewers})
+												</li>
+											</ul>
+											<div id='allTabsContainer'>
+												{tabType == 1 && <div className='tab-content__item -description'>{productDetails.productdetail ? parse(productDetails.productdetail.description) : "--"}</div>}
+												{tabType == 2 && (
+													<div className='tab-content__item -ship'>
+														{productReturnPolicyDetails != null ? <>
+															<h3 className="mb-2">{productReturnPolicyDetails.title}</h3>
+															<h6 className="mb-4">{productReturnPolicyDetails.sub_title}</h6>
+															<p>{parse(productReturnPolicyDetails.description)}</p>
+														</> : <></>}
+													</div>
+												)}
+												{tabType == 3 && (
+													<div className='tab-content__item -review'>
+														<form>
+															{/* <h5>Write a review</h5> */}
+															<div className='row'>
+																<div className='col-12 text-end'>
+																	<button type="button" className='btn -dark' onClick={(e) => { e.preventDefault(); setModalOpen(true) }}>Write a review</button>
+																	<Modal show={isModalOpen} onHide={() => setModalOpen(false)}>
+																		<Modal.Header closeButton>
+																			<Modal.Title>Write a Review</Modal.Title>
+																		</Modal.Header>
+																		<Modal.Body>
+																			<form>
+																				<div className='row'>
+																					<div className='col-12 col-md-12'>
+																						Ratings: ({selectedRatings})
+																						<br />
+																						{ratingsList.map(rl => <i onMouseEnter={() => getSelectedRatings(rl.value)} key={rl.value} className={rl.value <= selectedRatings ? rl.hoverLabel : rl.label}></i>)}
+																					</div>
+																					<div className='col-12'>
+																						<div className='input-validator'>
+																							<textarea className='review-textarea' name='review' placeholder='Enter Review' rows='5' onChange={(e) => setReviewText(e.target.value)}></textarea>
+																						</div>
+																						<span className='input-error'></span>
+																					</div>
+																				</div>
+																			</form>
+																		</Modal.Body>
+																		<Modal.Footer>
+																			<Button variant='danger' onClick={() => setModalOpen(false)}>
+																				Close
+																			</Button>
+																			<Button variant='secondary' disabled={selectedRatings <= 0 || reviewText == '' || reviewText == null} onClick={submitReview}>
+																				Submit
+																			</Button>
+																		</Modal.Footer>
+																	</Modal>
+																</div>
+															</div>
+														</form>
+														<hr />
+														{
+															productDetails.productreviews.length > 0 ?
+																<>{productDetails.productreviews.map(pReview =>
+																	<div key={pReview.id} className="card card-body mb-2">
+																		<div className="d-flex justify-content-between">
+																			<h6>{pReview.customer.firstname}&nbsp;{pReview.customer.lastname} on <code className="text-secondary"><i>{pReview.createdAt}</i></code></h6>
+																			<h6>{getStars(pReview.ratings)}</h6>
+																		</div>
+																		<p className="mb-0">{pReview.review}</p>
+																	</div>
+																)}
+																</> : <>No Review Given!</>
+														}
+													</div>
+												)}
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-						{productDetails.productcategory ? <RelatedProduct categoryId={productDetails.productcategory.id} /> : <></>}
-						<InstagramSlider />
+						{
+							productDetails.productbrandId ?
+								<SimilarProduct brandId={productDetails.productbrandId} />
+								: <></>
+						}
+						<PopularProduct />
 					</>
 				)}
 			</Layout>

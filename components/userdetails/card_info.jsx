@@ -239,7 +239,7 @@ export default function CardInfo({ user, profile = [] }) {
                 {/* State */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
-										<label htmlFor='country' className='form-label'>
+										<label htmlFor='state' className='form-label'>
 											State
 										</label>
 										<input type='text' className='form-control' id='state' name='state' value={bean.state ? bean.state : ""} onChange={handleChange} placeholder='State' />
@@ -249,7 +249,7 @@ export default function CardInfo({ user, profile = [] }) {
                 {/* City */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
-										<label htmlFor='country' className='form-label'>
+										<label htmlFor='city' className='form-label'>
 											City
 										</label>
 										<input type='text' className='form-control' id='city' name='city' value={bean.city ? bean.city : ""} onChange={handleChange} placeholder='City' />
@@ -259,7 +259,7 @@ export default function CardInfo({ user, profile = [] }) {
                 {/* Zip Code */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
-										<label htmlFor='country' className='form-label'>
+										<label htmlFor='zipCode' className='form-label'>
 											Zip Code
 										</label>
 										<input type='text' className='form-control' id='zipCode' name='zipCode' value={bean.zipCode ? bean.zipCode : ""} onChange={handleChange} placeholder='Zip Code' />
@@ -269,7 +269,7 @@ export default function CardInfo({ user, profile = [] }) {
                 {/* Phone */}
 								<div className='col-12 col-md-8'>
 									<div className='mb-3'>
-										<label htmlFor='country' className='form-label'>
+										<label htmlFor='phone' className='form-label'>
 											Phone No
 										</label>
 										<input type='text' className='form-control' id='phone' name='phone' value={bean.phone ? bean.phone : ""} onChange={handleChange} placeholder='Phone' />

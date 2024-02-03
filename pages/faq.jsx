@@ -10,9 +10,8 @@ function Faq({ appData }) {
 		<Layout title='FAQ'>
 			<>
 				<div className='breadcrumb'>
-					<div className='container mt-3'>
-						<h3>Frequently Asked Questions</h3>
-						<ul className='p-0'>
+					<div className='container mt-2'>
+						<ul className='p-0 mb-2'>
 							<li>
 								<Link href='/'>Home</Link>
 							</li>
@@ -26,17 +25,17 @@ function Faq({ appData }) {
 							<div className='accordion' id='faqAccordianList'>
 								{appData != null
 									? appData.map((item) => {
-											return (
-												<div className='card mb-2' key={item.id}>
-													<div className='card-header' data-bs-toggle='collapse' data-bs-target={`#faq-answer-section_${item.id}`}>
-														<b>{item.question}</b>
-													</div>
-													<div id={`faq-answer-section_${item.id}`} className='collapse' data-bs-parent='#faqAccordianList'>
-														<div className='card-body'>{parse(item.answer)}</div>
-													</div>
+										return (
+											<div className='card mb-2' key={item.id}>
+												<div className='card-header' data-bs-toggle='collapse' data-bs-target={`#faq-answer-section_${item.id}`}>
+													<b>{item.question}</b>
 												</div>
-											);
-									  })
+												<div id={`faq-answer-section_${item.id}`} className='collapse' data-bs-parent='#faqAccordianList'>
+													<div className='card-body'>{parse(item.answer)}</div>
+												</div>
+											</div>
+										);
+									})
 									: appData}
 							</div>
 						</div>

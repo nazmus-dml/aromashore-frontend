@@ -8,7 +8,8 @@ function InstagramSlider() {
 		infinite: true,
 		speed: 500,
 		slidesToShow: 4,
-		slidesToScroll: 1
+		slidesToScroll: 1,
+		autoplay: true
 	};
 	return (
 		<div className='instagram-two'>
@@ -31,6 +32,15 @@ function InstagramSlider() {
 					</a>
 					<a className='slider-item' href='https://www.instagram.com/'>
 						<Image src='/app/assets/images/instagram/InstagramTwo/6.png' alt='Instagram image' width={320} height={320} />
+					</a>
+					<a className='slider-item' href='https://www.instagram.com/'>
+						<Image src='/app/assets/images/instagram/InstagramTwo/1.png' alt='Instagram image' width={320} height={320} />
+					</a>
+					<a className='slider-item' href='https://www.instagram.com/'>
+						<Image src='/app/assets/images/instagram/InstagramTwo/2.png' alt='Instagram image' width={320} height={320} />
+					</a>
+					<a className='slider-item' href='https://www.instagram.com/'>
+						<Image src='/app/assets/images/instagram/InstagramTwo/3.png' alt='Instagram image' width={320} height={320} />
 					</a>
 				</SlickSlider>
 			</div>

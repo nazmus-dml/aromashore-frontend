@@ -45,7 +45,7 @@ export default function HeaderNavigation({ openCart }) {
 				pageNo: 0
 			})
 			.then((response) => {
-				// console.log("fetchProducts", response);
+				console.log("HeaderNavigation ---- fetchProducts ------->", response);
 				if (response.data.appStatus) {
 					setProductList(response.data.appData.rows);
 				}

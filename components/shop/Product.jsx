@@ -6,6 +6,7 @@ import Card from "react-bootstrap/Card";
 import Image from "next/image";
 
 export default function Product({ product, viewType = true, shopPage = false }) {
+	console.log(product)
 	const { add_TO_CART } = useContext(AppStore);
 	const [tabType, setTabType] = useState(1);
 	const [qty, setQty] = useState(1);
@@ -36,17 +37,17 @@ export default function Product({ product, viewType = true, shopPage = false }) 
 	return (
 		<>
 			{viewType ? (
-				<div className={shopPage ? "col-12 col-md-6 col-lg-4 col-xl-3 mb-4" : "col-12 p-0"}>
+				<div className={shopPage ? "col-12 col-md-6 col-lg-4 col-xl-3 mb-4" : "p-0"}>
 					<Card className='shadow'>
 						<Card.Body>
 							<div>
-								{productproperties.length <= 0 ? (
+								{/* {productproperties.length <= 0 ? (
 									<div className='product-type'>
 										<h5 className='-new p-2 bg-danger'>No Properties</h5>
 									</div>
 								) : (
 									<></>
-								)}
+								)} */}
 								<div className='product-thumb'>
 									<Link href={"/products/" + id}>
 										<span className='product-thumb__image'>{productimages[0] ? <Image src={productimages[0]?.image} alt={productimages[0]?.name} width={250} height={250} /> : <Image src='/app/assets/images/200.svg' alt='Placeholder' width={250} height={250} />}</span>
@@ -84,13 +85,13 @@ export default function Product({ product, viewType = true, shopPage = false }) 
 								</div>
 								<div className='product-content'>
 									<div className='product-content__header'>
-										<div className='product-category text-uppercase'>{productbrand.name}</div>
+										<div className='product-category text-uppercase'>{productcategory.name}</div>
 										<div className='rate'>
 											{avgRatingRange.map((item, i) => {
-												return <i key={i} className='fas fa-star'></i>;
+												return <i key={i} className='fas fa-star text-warning'></i>;
 											})}
 											{avgNonRatingRange.map((item, i) => {
-												return <i key={i} className='far fa-star'></i>;
+												return <i key={i} className='far fa-star text-secondary'></i>;
 											})}
 											{/* <span>({totalReviewers})</span> */}
 										</div>
@@ -114,7 +115,7 @@ export default function Product({ product, viewType = true, shopPage = false }) 
 									</Link>
 								</div>
 								<div className='col-12 col-md-7'>
-									<h6 className='mt-3 text-muted text-uppercase'>{productbrand.name}</h6>
+									<h6 className='mt-3 text-muted text-uppercase'>{productcategory.name}</h6>
 									<div className='product-content__header'>
 										<div className='rate'>
 											{avgRatingRange.map((item, i) => {

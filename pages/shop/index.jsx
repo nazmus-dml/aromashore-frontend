@@ -150,9 +150,8 @@ export default function Index() {
 		<Layout title='Shop Page'>
 			<div id='content'>
 				<div className='breadcrumb'>
-					<div className='container mt-3'>
-						<h2>Shop</h2>
-						<ul className='p-0'>
+					<div className='container mt-2'>
+						<ul className='p-0 mb-2'>
 							<li>
 								<Link href='/'>Home</Link>
 							</li>
@@ -172,13 +171,11 @@ export default function Index() {
 											</div>
 											<ul>
 												<li onClick={() => handleCategorySelect("all")}>All</li>
-												{categoryList.map((category) => {
-													return (
-														<li key={category.id} onClick={() => handleCategorySelect(category.id)}>
-															{category.category_name}
-														</li>
-													);
-												})}
+												{categoryList.map((category) =>
+													<li key={category.id} onClick={() => handleCategorySelect(category.id)}>
+														{category.category_name}
+													</li>
+												)}
 											</ul>
 										</div>
 										<div className='shop-sidebar__section -refine'>
@@ -187,24 +184,22 @@ export default function Index() {
 											</div>
 											<div className='shop-sidebar__section__item'>
 												<ul>
-													{productBrandList?.map((brand, i) => {
-														return (
-															<li key={i}>
-																<label htmlFor={"brand_id_" + brand.id}>
-																	<input
-																		type='checkbox'
-																		checked={brand.isChecked}
-																		name='brand_name'
-																		id={"brand_id_" + brand.id}
-																		onChange={(e) => {
-																			handleBandSelect(e.target.checked, brand);
-																		}}
-																	/>
-																	{brand.name}
-																</label>
-															</li>
-														);
-													})}
+													{productBrandList?.map((brand, i) =>
+														<li key={i}>
+															<label htmlFor={"brand_id_" + brand.id}>
+																<input
+																	type='checkbox'
+																	checked={brand.isChecked}
+																	name='brand_name'
+																	id={"brand_id_" + brand.id}
+																	onChange={(e) => {
+																		handleBandSelect(e.target.checked, brand);
+																	}}
+																/>
+																{brand.name}
+															</label>
+														</li>
+													)}
 												</ul>
 											</div>
 										</div>
@@ -241,10 +236,10 @@ export default function Index() {
 										<div className='shop-products '>
 											<div className='shop-products__gird'>
 												<div className='row'>
-													{productList.length > 0 &&
-														productList.map((product, i) => {
-															return <Product key={i} product={product} viewType={isGridView} shopPage={true} />;
-														})}
+													{
+														productList.length > 0 &&
+														productList.map((product, i) => <Product key={i} product={product} viewType={isGridView} shopPage={true} />)
+													}
 												</div>
 											</div>
 										</div>

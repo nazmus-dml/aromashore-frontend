@@ -99,7 +99,7 @@ export default function Footer() {
 											<ul className='company-info'>
 												<li>
 													<i className='fas fa-store'></i>
-													<span>{companyInfo.name}</span>
+													<span>{companyInfo.name ? companyInfo.name : 'Aromashore'}</span>
 												</li>
 												<li>
 													<i className='fas fa-mobile fa-lg'></i>
@@ -175,7 +175,8 @@ export default function Footer() {
 								</div>
 							</div>
 						</div>
-						<p className='text-center text-muted'>
+						<hr />
+						<p className='text-center text-muted mb-0'>
 							<small>All Right Reserved &copy; {new Date().getFullYear().toString()}</small>
 						</p>
 					</div>
