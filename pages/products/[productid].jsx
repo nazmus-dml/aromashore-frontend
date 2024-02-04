@@ -299,7 +299,7 @@ function ProductDetail() {
 												<div>
 													<h2>{productDetails.name}</h2>
 													<h6 className='text-secondary mb-1'>
-														{productDetails.productcategory ? productDetails.productcategory.name : "Anonymous"}
+														{productDetails.productcategory ? productDetails.productcategory.category_name : "Anonymous"}
 													</h6>
 													<h6 className='text-secondary mb-2'>SKU: {productpro ? (
 														productpro.variation_no ? (

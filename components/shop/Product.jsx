@@ -85,7 +85,7 @@ export default function Product({ product, viewType = true, shopPage = false }) 
 								</div>
 								<div className='product-content'>
 									<div className='product-content__header'>
-										<div className='product-category text-uppercase'>{productcategory.name}</div>
+										<div className='product-category text-uppercase'>{productcategory.category_name}</div>
 										<div className='rate'>
 											{avgRatingRange.map((item, i) => {
 												return <i key={i} className='fas fa-star text-warning'></i>;
@@ -115,7 +115,7 @@ export default function Product({ product, viewType = true, shopPage = false }) 
 									</Link>
 								</div>
 								<div className='col-12 col-md-7'>
-									<h6 className='mt-3 text-muted text-uppercase'>{productcategory.name}</h6>
+									<h6 className='mt-3 text-muted text-uppercase'>{productcategory.category_name}</h6>
 									<div className='product-content__header'>
 										<div className='rate'>
 											{avgRatingRange.map((item, i) => {
