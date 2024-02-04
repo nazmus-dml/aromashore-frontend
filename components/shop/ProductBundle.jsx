@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import apiUrl from "../../config";
 import axios from "axios";
 
 export default function ProductBundle({ productDetails = null, productId = null }) {
 
 	const [bundleProductList, setBundleProductList] = useState([]);
-	const [productpro, setProductpro] = useState(null);
 
 	useEffect(() => {
 		if (productId != null) {
@@ -23,65 +22,66 @@ export default function ProductBundle({ productDetails = null, productId = null 
 				console.log(error);
 				setBundleProductList([]);
 			});
-			setProductpro(productDetails.productproperties[0]);
 		}
 	}, [productId, productDetails]);
 
-	const handleChangeProperty = (e) => {
-		let findproductpro = productDetails.productproperties.find((item) => item.id == e.target.value);
-		setProductpro(findproductpro);
-	};
+	let totalBundlePrice = 0;
+
+	const getDiscountedPrice = (discount, price) => {
+		// console.log(discount, price);
+		let calculatedPrice = Number(price) - (Number(price) * (Number(discount) / 100));
+		totalBundlePrice += calculatedPrice;
+		return <span className="text-success">${calculatedPrice}</span>;
+	}
 
 	return (
 		<>
 			{
-				bundleProductList.length > 0 ? <div className="pt-3">
-					<h5>Frequently Bought Together</h5>
-					{bundleProductList.map(bpl => <>
-						<p>Buy this bundle and get {bpl.discount}% off</p>
-						<div className="d-flex justify-content-evenly align-items-center" key={bpl.id}>
-							<div className="text-center">
-								{productDetails.productimages.length > 0 ? <Image src={productDetails.productimages[0].image} width={75} height={75} /> : ""}<br />
-								<b className="d-block mb-2">{productDetails.name} ($
-									{productpro ? (
-										productpro.sale_price > 0 ? (
-											<>
-												{productpro.sale_price}&nbsp;&nbsp;
-												<del className="text-danger">${productpro.price}</del>
-											</>
-										) : (
-											productpro.price
+				bundleProductList.length > 0 ? <div className="card mt-4">
+					{bundleProductList.map(bpl => {
+						const productVeriation = JSON.parse(bpl.product_variation);
+						const bundleProducts = JSON.parse(bpl.bundle_products);
+						return <>
+							<div className="card-header pt-3 pb-3">
+								<h5 className="mb-0">Frequently Bought Together</h5>
+								<p className="mb-0">Buy this bundle and get <b className="text-success">{bpl.discount}% off</b></p>
+							</div>
+							<div className="card-body pt-4 pb-4">
+								<div className="d-flex justify-content-evenly align-items-center" key={bpl.id}>
+									<div className="border border-secondary rounded  p-2">
+										{/* {productDetails.productimages.length > 0 ? <Image src={productDetails.productimages[0].image} width={75} height={75} /> : ""}<br /> */}
+										<p className="mb-1"><b>{productVeriation.product_name}</b></p>
+										<p className="mb-0"><b>SKU:</b>&nbsp;{productVeriation.variation_no}</p>
+										<p className="mb-0"><b>Size:</b>&nbsp;{productVeriation.size} {productVeriation.size_unit}</p>
+										<p className="mb-0"><b>Price:</b>&nbsp;<del className="text-danger">
+											${productVeriation.price}</del>&nbsp;{getDiscountedPrice(bpl.discount, productVeriation.price)}
+										</p>
+									</div>
+									{
+										bundleProducts.map(bp => <>
+											<i className="fas fa-plus"></i>
+											<div className="border border-secondary rounded  p-2">
+												<p className="mb-1"><b>{bp.product_name}</b></p>
+												<p className="mb-0"><b>SKU:</b>&nbsp;{bp.variation_no}</p>
+												<p className="mb-0"><b>Size:</b>&nbsp;{bp.size} {bp.size_unit}</p>
+												<p className="mb-0"><b>Price:</b>&nbsp;<del className="text-danger">
+													${bp.price}</del>&nbsp;{getDiscountedPrice(bpl.discount, bp.price)}
+												</p>
+											</div>
+										</>
 										)
-									) : (
-										0
-									)})</b>
-								<select
-									name='unit_name'
-									onChange={(e) => {
-										handleChangeProperty(e);
-									}}
-									className='product-dropdown'>
-									{productDetails.productproperties &&
-										productDetails.productproperties.map((item, i) =>
-											<option key={i} value={item.id}>
-												{item.size} {item.size_unit}
-											</option>
-										)}
-								</select>
+									}
+								</div>
 							</div>
-							<i className="fas fa-plus"></i>
-							<div className="text-center">
-								<Image src='/app/assets/images/200.svg' alt='Placeholder' width={75} height={75} /><br />
-								{bpl.product_name}
+							<div className="card-footer pt-3 pb-3 d-flex justify-content-between align-items-center">
+								<b>Total Price: ${totalBundlePrice} ({bpl.discount}% off)</b>
+								<button className="btn btn-dark">
+									<i className="fa fa-cart-plus me-2"></i>
+									Add Bundle To Cart
+								</button>
 							</div>
-						</div>
-					</>
-					)}
-					<hr />
-					<div className="text-end mt-3">
-						<button className="btn btn-outline-dark rounded">
-							<i className="fa fa-cart-plus me-2"></i>Add Bundle To Cart</button>
-					</div>
+						</>
+					})}
 				</div> : <></>
 			}
 		</>

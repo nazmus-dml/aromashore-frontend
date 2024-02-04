@@ -84,10 +84,9 @@ function ProductDetail() {
 	const [selectedRatings, setSelectedRatings] = useState(0);
 	const [reviewText, setReviewText] = useState('');
 
-	let totalReviewersNumber = 0;
-	let totalRating = 0;
-	let avgRatingRangeArray = [];
-	let avgNonRatingRangeArray = [];
+
+	// let avgRatingRangeArray = [];
+	// let avgNonRatingRangeArray = [];
 
 	const ratingsList = [
 		{ value: 1, label: 'far fa-star fa-lg text-secondary', hoverLabel: 'fas fa-star fa-lg text-warning' },
@@ -101,6 +100,8 @@ function ProductDetail() {
 		axios.get(apiUrl + "/web/get/product/" + Number(query.productid)).then((response) => {
 			if (response.data.appStatus) {
 				const prodDetails = response.data.appData;
+				let totalReviewersNumber = 0;
+				let totalRating = 0;
 				console.log(prodDetails);
 				setProductDetails(prodDetails);
 				if (prodDetails.productproperties && prodDetails.productproperties.length > 0) {
@@ -122,11 +123,11 @@ function ProductDetail() {
 					avgRating = (totalRating - frac) / totalReviewersNumber;
 					totalRatingFrac = frac / 10;
 				}
-				avgRatingRangeArray = Array.from({ length: avgRating }, (_, index) => {
+				let avgRatingRangeArray = Array.from({ length: avgRating }, (_, index) => {
 					console.log('avgRatingRange -----', index)
 					return index + 1;
 				});
-				avgNonRatingRangeArray = Array.from({ length: 5 - avgRating }, (_, index) => {
+				let avgNonRatingRangeArray = Array.from({ length: 5 - avgRating }, (_, index) => {
 					console.log('avgNonRatingRange -----', index)
 					return index + 1;
 				});
@@ -311,7 +312,7 @@ function ProductDetail() {
 														productDetails.product_no
 													)}</h6>
 												</div>
-												<div className="d-flex flex-column justify-content-end">
+												<div className="d-flex flex-column justify-content-start pt-2" style={{ minWidth: 120 }}>
 													<div onClick={handleClick}>
 														{
 															avgRatingRange.map((item, i) => <i key={i} className='fas fa-star fa-lg text-warning'></i>)
@@ -429,13 +430,13 @@ function ProductDetail() {
 													<i className='fas fa-heart'></i>
 												</a> */}
 													</div>
-													<hr />
 													<ProductBundle productDetails={productDetails} productId={Number(query.productid)} />
 												</div>
 											</div>
 										</div>
 									</div>
 								</div>
+								<hr />
 								<div className="row">
 									<div className="col-12 col-sm-12">
 										<div className='product-detail__content__tab'>
