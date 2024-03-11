@@ -11,7 +11,7 @@ import Router from "next/router";
 function Login({ previousUrl }) {
 	const { setUSER, user: loadUser } = useContext(AppStore);
 	const [user, setUser] = useState({
-		contact: "",
+		username: "",
 		password: "",
 		rememberMe: false
 	});
@@ -35,6 +35,7 @@ function Login({ previousUrl }) {
 	};
 
 	const handleSubmit = async (e) => {
+		console.log('handleSubmit', user);
 		e.preventDefault();
 		const errorsCopy = loginValidate(user);
 		setErrors(errorsCopy);
@@ -44,8 +45,8 @@ function Login({ previousUrl }) {
 			toast(data.appMessage);
 			if (data.appStatus == false) return;
 			setUSER(data.appData);
-			Router.push(previousUrl);
-		} catch (error) {}
+			Router.push('/');
+		} catch (error) { }
 	};
 
 	return (
@@ -58,14 +59,14 @@ function Login({ previousUrl }) {
 							<div className='sign-in-section'>
 								<div className='sign-up__card'>
 									<div className='sign-up__card-body'>
-										<div className='mt-4'>
+										<div className='mt-2'>
 											<p className='login-em'>Login Form</p>
 										</div>
 										<form className='mt-4' onSubmit={handleSubmit}>
 											<div className='myform-group'>
 												<div className='col-12'>
-													<input className='form-control myform-control' type='text' name='contact' value={user.contact} onChange={handleChange} placeholder='Enter Mobile Number' />
-													{errors && errors.contact && <div style={{ color: "red" }}>{errors.contact}</div>}
+													<input className='form-control myform-control' type='text' name='username' value={user.username} onChange={handleChange} placeholder='Enter Username' />
+													{errors && errors.username && <div style={{ color: "red" }}>{errors.username}</div>}
 												</div>
 											</div>
 											<div className='myform-group'>
@@ -84,18 +85,18 @@ function Login({ previousUrl }) {
 											</div> */}
 											<div className='myform-group mt-4'>
 												<div className='col-12'>
-													<button className='btn my-btn -red'>Login</button>
+													<button type="submit" className='btn my-btn -red'>Login</button>
 												</div>
 											</div>
-											<div className='myform-group row mt-4'>
-												<div className='col-7'>
+											<div className='row mt-4 text-center'>
+												<div className='col-12'>
 													<a className='my-link' href=''>
-														Forgot your password?
+														Forgot your Password?
 													</a>
 												</div>
-												<div className='col-5 text-right'>
-													<Link href='/signup'>
-														<span className='my-link'>Create an account</span>
+												<div className='col-12 mt-2'>
+													<Link href='/signup' className="text-primary">
+														Don't Have Account! Create Now.
 													</Link>
 												</div>
 											</div>

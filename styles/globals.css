@@ -1325,7 +1325,7 @@ button:hover .cart__quantity {
   background-repeat: no-repeat;
   width: 100%;
   padding: 3em 0 1em 0;
-  border-top: 1px dashed #999;
+  /* border-top: 1px dashed #999; */
   background-color: #f1f1f1;
 }
 
@@ -1405,7 +1405,7 @@ button:hover .cart__quantity {
 
   .footer-one__header__social .social-icons {
     width: 100%;
-    padding-right: 46px;
+    /* padding-right: 46px; */
   }
 
   .footer-one__footer {

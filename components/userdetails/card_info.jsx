@@ -1,25 +1,25 @@
-import {faEdit} from "@fortawesome/free-solid-svg-icons";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Cookies from "js-cookie";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import {ToastContainer, toast} from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {getCountriesList} from "../../services/publicContentsService";
-import {updateprofileByCustomer} from "../../services/webCustomerService";
+import { getCountriesList } from "../../services/publicContentsService";
+import { updateprofileByCustomer } from "../../services/webCustomerService";
 
 export default function CardInfo({ user, profile = [] }) {
 	const carddata = Cookies.get("card_data");
 
-	const {ini_card_name, ini_card_number, ini_card_cvc, ini_card_expiry} 
-    = carddata ? JSON.parse(carddata) 
-    : {
-      ini_card_name:null, 
-      ini_card_number:null, 
-      ini_card_cvc:null, 
-      ini_card_expiry:null
-    };
+	const { ini_card_name, ini_card_number, ini_card_cvc, ini_card_expiry }
+		= carddata ? JSON.parse(carddata)
+			: {
+				ini_card_name: null,
+				ini_card_number: null,
+				ini_card_cvc: null,
+				ini_card_expiry: null
+			};
 
 	const [CardName, setCardName] = useState(ini_card_name || null);
 	const [CardNumber, setCardNumber] = useState(ini_card_number || null);
@@ -31,27 +31,27 @@ export default function CardInfo({ user, profile = [] }) {
 	const [bean, setBean] = useState({
 		...profile
 	});
-	
-  const handleChange = (e) => {
+
+	const handleChange = (e) => {
 		bean[e.target.name] = e.target.value;
 		setBean({ ...bean });
 	};
 
 	const Cookies_set = () => {
 		// const arr = [CardName, CardNumber, CardCvc, CardExpiry];
-		const arr = {CardName, CardNumber, CardCvc, CardExpiry};
+		const arr = { CardName, CardNumber, CardCvc, CardExpiry };
 		const data = JSON.stringify(arr);
-    console.log('Cookies');
-    console.log('data:',data);
-    // console.log('profile:',profile);
-    // console.log('bean:',bean);
+		console.log('Cookies');
+		console.log('data:', data);
+		// console.log('profile:',profile);
+		// console.log('bean:',bean);
 		Cookies.set("card_data", data);
 	};
 
 	const handleSubmit = () => {
 		Cookies_set();
 
-    return
+		return
 		try {
 			let result = updateprofileByCustomer({
 				...bean,
@@ -64,60 +64,60 @@ export default function CardInfo({ user, profile = [] }) {
 					setIsdcCardshow(false);
 				}
 			});
-		} catch (error) {}
+		} catch (error) { }
 	};
 
-  // =========================================================================
+	// =========================================================================
 
-  useEffect(() => {
+	useEffect(() => {
 
-    console.log('user:',user)
-    
-    getCountriesList()
+		console.log('user:', user)
+
+		getCountriesList()
 			.then((response) => {
 				if (response.status === 200 && !response.data["appStatus"]) {
 					// setCCProfileCountryList([]);
-          console.log('empty country list')
-				} 
+					console.log('empty country list')
+				}
 
 				// console.log('data:',response.data);
 
-        else {
+				else {
 					const tempCountryList = response.data["appData"];
 					// console.log('tempCountryList:',tempCountryList);
 
-          /*
-					const customCountryList = [];
-					tempCountryList.map((cl) => {
-						const country = { value: cl.id, label: `${cl.name} (${cl.code})` };
-						customCountryList.push(country);
-						return true;
-					});
-          */
+					/*
+							  const customCountryList = [];
+							  tempCountryList.map((cl) => {
+								  const country = { value: cl.id, label: `${cl.name} (${cl.code})` };
+								  customCountryList.push(country);
+								  return true;
+							  });
+					*/
 
-          const customCountryList = tempCountryList.map((cl) => {
-            return { 
-              value: cl.id, 
-              label: `${cl.name}`
-            }
-          });
+					const customCountryList = tempCountryList.map((cl) => {
+						return {
+							value: cl.id,
+							label: `${cl.name}`
+						}
+					});
 
 					// setCCProfileCountryList(customCountryList);
-          // console.log('customCountryList:',customCountryList)
+					// console.log('customCountryList:',customCountryList)
 				}
-        
+
 			})
 			.catch(function (error) {
 				console.log(error);
 			});
-   
-    // =============================
 
-    
-  
-    
-  }, [])
-  
+		// =============================
+
+
+
+
+	}, [])
+
 
 	return (
 		<>
@@ -134,9 +134,9 @@ export default function CardInfo({ user, profile = [] }) {
 						<FontAwesomeIcon icon={faEdit} />
 					</span>
 				</div>
-				
-        {/* table */}
-        <div className='card-body'>
+
+				{/* table */}
+				<div className='card-body'>
 					<table className='table mb-0'>
 						<thead>
 							<tr>
@@ -171,8 +171,8 @@ export default function CardInfo({ user, profile = [] }) {
 							</tbody>
 						)}
 					</table>
-					
-          <Modal show={isdcCardshow} onHide={() => setIsdcCardshow(false)} dialogClassName='modal-w-cdcard base-modal modal-dialog modal-dialog-centered'>
+
+					<Modal show={isdcCardshow} onHide={() => setIsdcCardshow(false)} dialogClassName='modal-w-cdcard base-modal modal-dialog modal-dialog-centered'>
 						<Modal.Header closeButton>
 							<Modal.Title>Debit/Credit Card Profile</Modal.Title>
 						</Modal.Header>
@@ -212,11 +212,11 @@ export default function CardInfo({ user, profile = [] }) {
 									</div>
 								</div>
 							</div>
-							
-              <h6>Billing Address</h6>
+
+							<h6>Billing Address</h6>
 							<div className='row'>
 
-                {/* Address */}
+								{/* Address */}
 								<div className='col-12 col-md-12'>
 									<div className='mb-3'>
 										<label htmlFor='address' className='form-label'>
@@ -226,7 +226,7 @@ export default function CardInfo({ user, profile = [] }) {
 									</div>
 								</div>
 
-                {/* Country */}
+								{/* Country */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
 										<label htmlFor='country' className='form-label'>
@@ -236,7 +236,7 @@ export default function CardInfo({ user, profile = [] }) {
 									</div>
 								</div>
 
-                {/* State */}
+								{/* State */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
 										<label htmlFor='state' className='form-label'>
@@ -246,7 +246,7 @@ export default function CardInfo({ user, profile = [] }) {
 									</div>
 								</div>
 
-                {/* City */}
+								{/* City */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
 										<label htmlFor='city' className='form-label'>
@@ -256,7 +256,7 @@ export default function CardInfo({ user, profile = [] }) {
 									</div>
 								</div>
 
-                {/* Zip Code */}
+								{/* Zip Code */}
 								<div className='col-12 col-md-4'>
 									<div className='mb-3'>
 										<label htmlFor='zipCode' className='form-label'>
@@ -266,7 +266,7 @@ export default function CardInfo({ user, profile = [] }) {
 									</div>
 								</div>
 
-                {/* Phone */}
+								{/* Phone */}
 								<div className='col-12 col-md-8'>
 									<div className='mb-3'>
 										<label htmlFor='phone' className='form-label'>
@@ -286,8 +286,8 @@ export default function CardInfo({ user, profile = [] }) {
 								}}>
 								Close
 							</Button>
-							
-              <Button variant='primary' onClick={handleSubmit}>
+
+							<Button variant='primary' onClick={handleSubmit}>
 								Update
 							</Button>
 						</Modal.Footer>

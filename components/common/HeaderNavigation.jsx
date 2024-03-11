@@ -169,7 +169,7 @@ export default function HeaderNavigation({ openCart }) {
 											<Link href='/user'>
 												<button className='btn btn-outline-secondary btn-sm'>
 													<i className='fas fa-user'></i>
-													<span className='customer-name'>{user.name}</span>
+													<span className='customer-name'>{user.username}</span>
 												</button>
 											</Link>
 										</li>

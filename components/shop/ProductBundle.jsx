@@ -8,6 +8,7 @@ export default function ProductBundle({ productDetails = null, productId = null 
 	const [bundleProductList, setBundleProductList] = useState([]);
 
 	useEffect(() => {
+		console.log(productDetails)
 		if (productId != null) {
 			axios.get(apiUrl + "/web/getall/bundle/" + Number(productId)).then((response) => {
 				console.log(response);

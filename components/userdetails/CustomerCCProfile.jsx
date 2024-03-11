@@ -252,7 +252,6 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 		// const code = nameNCode[1].toString().slice(0, -1);
 		const code = value;
 		if (value) {
-
 			getCitiesByStateId(value)
 				.then(function (response) {
 					// console.log(response);

@@ -1,20 +1,20 @@
-import {faImage} from "@fortawesome/free-solid-svg-icons";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { faImage } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import React, {useState} from "react";
-import {TabPanel, useTabs} from "react-headless-tabs";
+import React, { useState } from "react";
+import { TabPanel, useTabs } from "react-headless-tabs";
 import CustomerCCProfile from "../../components/userdetails/CustomerCCProfile";
 import OrderInfo from "../../components/userdetails/order_info";
 import PersonalInfo from "../../components/userdetails/personal_info";
 import Layout from "../../layouts/Layout";
-import {getprofileByCustomer, updateprofilePicture} from "../../services/webCustomerService";
+import { getprofileByCustomer, updateprofilePicture } from "../../services/webCustomerService";
 
 export default function Index({ user, customerprofile }) {
 	const [profileImgUrl, setProfileImgUrl] = useState(
-    customerprofile?.customerprofile?.image 
-    ? customerprofile?.customerprofile?.image 
-    : "/app/assets/images/avatar.jpg"
-  );
+		customerprofile?.customerprofile?.image
+			? customerprofile?.customerprofile?.image
+			: "/app/assets/images/avatar.jpg"
+	);
 
 	const previewFile = (e) => {
 		let file = e.target.files[0];
@@ -96,7 +96,9 @@ export default function Index({ user, customerprofile }) {
 						</TabPanel>
 						<TabPanel hidden={selectedTab !== "cards"}>
 							{/* <CardInfo user={user} profile={customerprofile.customerprofile.cc_profile} /> */}
-							<CustomerCCProfile customerId={user.uid} creditCard={JSON.parse(customerprofile?.customerprofile?.cc_profile)}/>
+							{customerprofile?.customerprofile?.cc_profile ?
+								<CustomerCCProfile customerId={user.uid} creditCard={JSON.parse(customerprofile?.customerprofile?.cc_profile)} /> : <CustomerCCProfile customerId={user.uid} creditCard={[]} />
+							}
 						</TabPanel>
 						<TabPanel hidden={selectedTab !== "orders"}>
 							<OrderInfo user={user} />

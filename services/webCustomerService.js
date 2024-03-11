@@ -9,7 +9,7 @@ export function fetchCustomerTypes() {
 
 export function getprofileByCustomer(user) {
   return http.get(
-    apiUrl + `/web/customer/getprofile/${user.uid}/${user.contact}`,
+    apiUrl + `/web/customer/getprofile/${user.uid}/${user.username}`,
     {
       headers: {
         Authorization: user.token_id,

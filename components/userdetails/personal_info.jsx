@@ -1,11 +1,11 @@
 import Cookies from "js-cookie";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import {ToastContainer, toast} from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {validatePasswordChange} from "../../models/user";
-import {changeProfilePassword, updateprofileByCustomer} from "../../services/webCustomerService";
+import { validatePasswordChange } from "../../models/user";
+import { changeProfilePassword, updateprofileByCustomer } from "../../services/webCustomerService";
 
 
 const groupTypeList = [
@@ -72,18 +72,20 @@ const getNameFromListById = (list, id) => {
 		name: ""
 	};
 
-  data = list.find((al) => al.value === Number(id));
+	data = list.find((al) => al.value === Number(id));
 
 	return data?.name || "";
 };
 
 export default function PersonalInfo({ user, profile }) {
+	console.log(user, profile)
 	let basicInfo = {
 		customer_no: profile?.customer_no,
 		firstname: profile?.firstname,
 		lastname: profile?.lastname,
 		company: profile?.company,
 		contact: profile?.contact,
+		username: profile?.username,
 		email: profile?.email,
 		created_by: new Date(),
 		customercategoryId: profile?.customercategory?.id,
@@ -176,7 +178,7 @@ export default function PersonalInfo({ user, profile }) {
 					setShowPersonalInfoModal(false);
 				}
 			});
-		} catch (error) {}
+		} catch (error) { }
 	};
 
 	const [errors, setErrors] = useState({});
@@ -198,44 +200,44 @@ export default function PersonalInfo({ user, profile }) {
 		const errorsCopy = validatePasswordChange({
 			previousPassword: bean.previousPassword,
 			newPassword: bean.newPassword,
-			repeatPassword:bean.repeat_password,
+			repeatPassword: bean.repeat_password,
 		});
 		setErrors(errorsCopy);
 		if (errorsCopy) return;
 		try {
-      const reqBody = {
-        "oldpassword": bean.previousPassword,
-        "password":  bean.newPassword
-      }
+			const reqBody = {
+				"oldpassword": bean.previousPassword,
+				"password": bean.newPassword
+			}
 
 			let { data } = await changeProfilePassword(reqBody, user);
 			toast(data.appMessage);
 		} catch (error) {
-      console.log('error:',error)
-    }
+			console.log('error:', error)
+		}
 	};
 
 	return (
 		<>
 			<ToastContainer />
 			<div className='bg-light'>
-				
-        {/* Profile Information */}
+
+				{/* Profile Information */}
 				<div className='card border-0 bg-transparent'>
 					<div className='card-header'>
 						<h5 className='mb-0'>Profile Information</h5>
 					</div>
 
 					<div className='card-body'>
-            
-            {/* parent */}
+
+						{/* parent */}
 						<div className='row'>
 
 							{/* child 1 */}
-              <div className='col-12 col-md-7'>
+							<div className='col-12 col-md-7'>
 								{/* 1.1 - Personal Info */}
-                <div className='card'>
-                  {/* 1.1 - Personal Info Icon */}
+								<div className='card'>
+									{/* 1.1 - Personal Info Icon */}
 									<div className='card-header d-flex align-items-center justify-content-between'>
 										Personal Info
 										<i
@@ -245,50 +247,54 @@ export default function PersonalInfo({ user, profile }) {
 											}}></i>
 									</div>
 
-                  {/* 1.1 - Personal Info Table */}
+									{/* 1.1 - Personal Info Table */}
 									<div className='card-body'>
 										<table className='table'>
 											<tbody>
-                        {/* fn + ln */}
+												<tr>
+													<th>Username</th>
+													<td colSpan={3}>{bean.username}</td>
+												</tr>
+												{/* fn + ln */}
 												<tr>
 													<th>First Name</th>
 													<td>{bean.firstname}</td>
 													<th>Last Name</th>
 													<td>{bean.lastname}</td>
 												</tr>
-												
-                        {/* comp name */}
-                        <tr>
+
+												{/* comp name */}
+												<tr>
 													<th>Company Name</th>
 													<td colSpan={3}>{bean.company}</td>
 												</tr>
-												
-                        {/* group + race */}
-                        <tr>
+
+												{/* group + race */}
+												<tr>
 													<th>Group</th>
 													<td>{getNameFromListById(groupTypeList, bean.group)}</td>
 													<th>Race</th>
 													<td>{getNameFromListById(raceTypeList, bean.race)}</td>
 												</tr>
-												
-                        {/* zone + location */}
-                        <tr>
+
+												{/* zone + location */}
+												<tr>
 													<th>Zone</th>
 													<td>{getNameFromListById(zoneList, bean.zone)}</td>
 													<th>Location</th>
 													<td>{getNameFromListById(locationList, bean.location)}</td>
 												</tr>
-												
-                        {/* service + carrier */}
-                        <tr>
+
+												{/* service + carrier */}
+												<tr>
 													<th>Service</th>
 													<td>{getNameFromListById(serviceTypeList, bean.service)}</td>
 													<th>Carrier</th>
 													<td>{getNameFromListById(carrierTypeList, bean.carrier)}</td>
 												</tr>
-												
-                        {/* limit + taxID */}
-                        <tr>
+
+												{/* limit + taxID */}
+												<tr>
 													<th>Limit</th>
 													<td>{bean.limit}</td>
 													<th>Tax ID</th>
@@ -299,7 +305,7 @@ export default function PersonalInfo({ user, profile }) {
 									</div>
 								</div>
 
-                {/* 1.2 - Contact Info */}
+								{/* 1.2 - Contact Info */}
 								<div className='card mt-3'>
 									<div className='card-header d-flex align-items-center justify-content-between'>
 										Contact Info
@@ -354,10 +360,10 @@ export default function PersonalInfo({ user, profile }) {
 								</div>
 							</div>
 
-              {/* child 2 - Change Password + Other Info */}
+							{/* child 2 - Change Password + Other Info */}
 							<div className='col-12 col-md-5'>
 								{/* Change Password */}
-                <div className='card'>
+								<div className='card'>
 									<div className='card-header'>Change Password</div>
 									<div className='card-body'>
 										<form onSubmit={handleChangePasswordSubmit}>
@@ -400,7 +406,7 @@ export default function PersonalInfo({ user, profile }) {
 									</div>
 								</div>
 
-                {/* Other Info */}
+								{/* Other Info */}
 								<div className='card mt-3'>
 									<div className='card-header'>Other Info</div>
 									<div className='card-body'>
@@ -438,15 +444,15 @@ export default function PersonalInfo({ user, profile }) {
 						</div>
 					</div>
 				</div>
-			
+
 			</div>
 
 			<Modal show={showPersonalInfoModal} onHide={() => setShowPersonalInfoModal(false)} size='lg'>
 				<Modal.Header closeButton>
 					<Modal.Title>Address</Modal.Title>
 				</Modal.Header>
-				
-        <Modal.Body>
+
+				<Modal.Body>
 					<div className='row'>
 						<div className='col-12 col-md-4'>
 							<div className='mb-3'>
@@ -625,8 +631,8 @@ export default function PersonalInfo({ user, profile }) {
 					</div>
 					{/* <pre>{JSON.stringify(bean, null, 2)}</pre> */}
 				</Modal.Body>
-				
-        <Modal.Footer>
+
+				<Modal.Footer>
 					<Button
 						variant='secondary'
 						onClick={() => {

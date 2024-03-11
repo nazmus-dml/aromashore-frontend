@@ -2,22 +2,25 @@ import React, { useState } from "react";
 import Layout from "../layouts/Layout";
 import Link from "next/link";
 import { validate, validateProperty } from "../models/user";
-import { register } from "../services/userService";
+import { register, validateUsername } from "../services/userService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Router from "next/router";
+
 function Signup() {
 	const [user, setUser] = useState({
 		customercategoryId: "1",
 		firstname: "",
 		lastname: "",
 		contact: "",
+		username: "",
 		email: "",
 		password: "",
 		registerPolicyEmail: true,
 		registerPolicySMS: true
 	});
 	const [errors, setErrors] = useState({});
+
 	const handleChange = (e) => {
 		var errorsCopy = { ...errors };
 		const errorMessage = validateProperty(e.currentTarget);
@@ -28,11 +31,32 @@ function Signup() {
 		userCopy[e.currentTarget.name] = e.currentTarget.value;
 		setUser(userCopy);
 	};
+
 	const handleInputCheck = (e) => {
 		let userCopy = { ...user };
 		userCopy[e.currentTarget.name] = e.target.checked;
 		setUser(userCopy);
 	};
+
+	const validateUser = async () => {
+		if (user.username) {
+			try {
+				const { data } = await validateUsername(user.username);
+				console.log(data.appMessage);
+				const errorsTemp = { ...errors };
+				errorsTemp.username = data.appMessage;
+				setErrors(errorsTemp);
+			} catch (ex) {
+				if (ex.response && ex.response.status === 400) {
+					console.log(errorsTemp);
+					const errorsTemp = { ...errors };
+					errorsTemp.username = ex.response.data;
+					setErrors(errorsTemp);
+				}
+			}
+		}
+	}
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		const errorsCopy = validate(user);
@@ -42,7 +66,7 @@ function Signup() {
 		try {
 			const { data } = await register(user);
 			toast(data.appMessage);
-			Router.push('/')
+			Router.push('/login');
 		} catch (ex) {
 			if (ex.response && ex.response.status === 400) {
 				const errorsTemp = { ...errors };
@@ -61,7 +85,7 @@ function Signup() {
 							<div className='sign-up-section'>
 								<div className='sign-up__card'>
 									<div className='sign-up__card-body'>
-										<div className='mt-4'>
+										<div className='mt-2'>
 											<p className='login-em'>Create Account</p>
 										</div>
 										<form className='mt-4' onSubmit={handleSubmit}>
@@ -92,8 +116,8 @@ function Signup() {
 											</div>
 											<div className='row'>
 												<div className='col-12 col-md-7'>
-													<input className='form-control myform-control mb-2' type='text' name='contact' value={user.contact} onChange={handleChange} placeholder='Mobile Number' />
-													{errors && errors.contact && <div style={{ color: "red" }}>{errors.contact}</div>}
+													<input className='form-control myform-control mb-2' type='text' name='username' value={user.username} onBlur={validateUser} onChange={handleChange} placeholder='Username' />
+													{errors && errors.username && <div style={{ color: "red" }}>{errors.username}</div>}
 												</div>
 												<div className='col-12 col-md-5'>
 													<input className='form-control myform-control mb-2' type='password' name='password' value={user.password} onChange={handleChange} placeholder='Password' />
@@ -101,9 +125,13 @@ function Signup() {
 												</div>
 											</div>
 											<div className='row'>
-												<div className='col-12 col-md-12'>
+												<div className='col-12 col-md-7'>
 													<input className='form-control myform-control mb-2' type='text' name='email' value={user.email} onChange={handleChange} placeholder='Email' />
 													{errors && errors.email && <div style={{ color: "red" }}>{errors.email}</div>}
+												</div>
+												<div className='col-12 col-md-5'>
+													<input className='form-control myform-control mb-2' type='text' name='contact' value={user.contact} onChange={handleChange} placeholder='Mobile Number' />
+													{errors && errors.contact && <div style={{ color: "red" }}>{errors.contact}</div>}
 												</div>
 											</div>
 											<div className='row myform-check'>
@@ -122,12 +150,10 @@ function Signup() {
 												<div className='col-12'>
 													<br />
 													<label>
-														<small>
-															<i>
-																By submitting this form, you agree to receive recurring automated promotional and personalized marketing text messages (e.g. new releases, order updates) from Aromashore at the cell number used when signing up. Consent is not a
-																condition of any purchase. Reply HELP for help and STOP to cancel. Message frequency varies. Message &amp; Data Rates may apply. View <a href=''>Terms &amp; Condition</a>
-															</i>
-														</small>
+														<p style={{ fontSize: '10px', lineHeight: '12px', color: '#999', margin: 0, fontStyle: 'italic' }}>
+															By submitting this form, you agree to receive recurring automated promotional and personalized marketing text messages (e.g. new releases, order updates) from Aromashore at the cell number used when signing up. Consent is not a
+															condition of any purchase. Reply HELP for help and STOP to cancel. Message frequency varies. Message &amp; Data Rates may apply.<br />View <a href=''>Terms &amp; Condition</a>
+														</p>
 													</label>
 												</div>
 											</div>
@@ -138,8 +164,8 @@ function Signup() {
 											</div>
 											<div className='row mt-4'>
 												<div className='col-12 text-center'>
-													<Link href='/login'>
-														<span className='my-link'>Already have account?</span>
+													<Link href='/login' className="text-primary">
+														Already have Account?
 													</Link>
 												</div>
 											</div>

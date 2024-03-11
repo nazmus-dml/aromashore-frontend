@@ -3,9 +3,10 @@ import apiUrl from "../config";
 import http from "./httpService";
 const apiEndPoint = apiUrl + "/web/customer/login";
 
-export async function login({contact, password}) {
+export async function login({username, password}) {
+  console.log('login called')
   Cookies.set("login", true)
-  const {data} = await http.post(apiEndPoint, {contact, password});
+  const {data} = await http.post(apiEndPoint, {username, password});
   return data;
 }
 
