@@ -13,8 +13,7 @@ export default function ResellerRequest() {
 		company: "",
 		contact: "",
 		email: "",
-		message: "",
-		comments: ""
+		message: ""
 	});
 	const handleChange = (e) => {
 		bean[e.target.name] = e.target.value;
@@ -34,6 +33,15 @@ export default function ResellerRequest() {
 		try {
 			let { data } = await addResellerRequest(rsrq);
 			toast(data.appMessage);
+			if (!data.appStatus) return;
+			setBean({
+				firstname: "",
+				lastname: "",
+				company: "",
+				contact: "",
+				email: "",
+				message: ""
+			});
 		} catch (error) {
 			console.log(error);
 		}
@@ -88,16 +96,16 @@ export default function ResellerRequest() {
 													<input type='text' placeholder='Email' name='email' value={bean.email} onChange={handleChange} required='required' />
 												</div>
 											</div>
-											<div className="col-12 col-md-6">
+											<div className="col-12 col-md-12">
 												<div className='input-validator'>
 													<textarea placeholder='Message' name='message' value={bean.message} onChange={handleChange} className='form-control' rows='3' />
 												</div>
 											</div>
-											<div className="col-12 col-md-6">
+											{/* <div className="col-12 col-md-6">
 												<div className='input-validator'>
 													<textarea placeholder='Comments' name='comments' value={bean.comments} onChange={handleChange} className='form-control' rows='3' />
 												</div>
-											</div>
+											</div> */}
 											<div className="col-12 text-end">
 												<button className='btn -light-red'>Send</button>
 											</div>

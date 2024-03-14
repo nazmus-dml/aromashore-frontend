@@ -320,7 +320,7 @@ export default function PersonalInfo({ user, profile }) {
 											<tbody>
 												<tr>
 													<th>Contact</th>
-													<td>{bean.contact}</td>
+													<td>{bean.contact.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3")}</td>
 													<th>Email</th>
 													<td>{bean.email}</td>
 												</tr>

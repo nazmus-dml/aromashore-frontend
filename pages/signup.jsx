@@ -1,17 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "../layouts/Layout";
 import Link from "next/link";
 import { validate, validateProperty } from "../models/user";
 import { register, validateUsername } from "../services/userService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Router from "next/router";
+import { useRouter } from "next/router";
+import apiUrl from "../config";
+import axios from "axios";
 
 function Signup() {
+	const router = useRouter();
 	const [user, setUser] = useState({
 		customercategoryId: "1",
 		firstname: "",
 		lastname: "",
+		dial_code: "+1",
 		contact: "",
 		username: "",
 		email: "",
@@ -20,6 +24,21 @@ function Signup() {
 		registerPolicySMS: true
 	});
 	const [errors, setErrors] = useState({});
+	const [showPassword, setShowPassword] = useState(false);
+	const [allCountryList, setAllCountryList] = useState([{ dial_code: '+1', name: 'USA' }, { dial_code: '+880', name: 'BD' }]);
+
+	// useEffect(() => {
+	// 	axios.get(apiUrl + "/public/country").then(function (response) {
+	// 		console.log(response);
+	// 		if (response.status === 200 && !response.data["appStatus"]) {
+	// 			setAllCountryList([]);
+	// 		} else {
+	// 			setAllCountryList(response.data["appData"]);
+	// 		}
+	// 	}).catch(function (error) {
+	// 		console.log(error);
+	// 	});
+	// }, []);
 
 	const handleChange = (e) => {
 		var errorsCopy = { ...errors };
@@ -42,13 +61,13 @@ function Signup() {
 		if (user.username) {
 			try {
 				const { data } = await validateUsername(user.username);
-				console.log(data.appMessage);
+				// console.log(data.appMessage);
 				const errorsTemp = { ...errors };
 				errorsTemp.username = data.appMessage;
 				setErrors(errorsTemp);
 			} catch (ex) {
 				if (ex.response && ex.response.status === 400) {
-					console.log(errorsTemp);
+					// console.log(errorsTemp);
 					const errorsTemp = { ...errors };
 					errorsTemp.username = ex.response.data;
 					setErrors(errorsTemp);
@@ -62,18 +81,19 @@ function Signup() {
 		const errorsCopy = validate(user);
 		setErrors(errorsCopy);
 		console.log(errorsCopy);
+		console.log(user);
 		if (errorsCopy) return;
-		try {
-			const { data } = await register(user);
-			toast(data.appMessage);
-			Router.push('/login');
-		} catch (ex) {
-			if (ex.response && ex.response.status === 400) {
-				const errorsTemp = { ...errors };
-				errorsTemp.email = ex.response.data;
-				setErrors(errorsTemp);
-			}
-		}
+		// try {
+		// 	const { data } = await register(user);
+		// 	toast(data.appMessage);
+		// 	router.push('/');
+		// } catch (ex) {
+		// 	if (ex.response && ex.response.status === 400) {
+		// 		const errorsTemp = { ...errors };
+		// 		errorsTemp.email = ex.response.data;
+		// 		setErrors(errorsTemp);
+		// 	}
+		// }
 	};
 	return (
 		<>
@@ -105,33 +125,42 @@ function Signup() {
 												</div>
 											</div> */}
 											<div className='row'>
-												<div className='col-12 col-md-7'>
+												<div className='col-12 col-md-6'>
 													<input className='form-control myform-control mb-2' type='text' name='firstname' value={user.firstname} onChange={handleChange} placeholder='First Name' />
 													{errors && errors.firstname && <div style={{ color: "red" }}>{errors.firstname}</div>}
 												</div>
-												<div className='col-12 col-md-5'>
+												<div className='col-12 col-md-6'>
 													<input className='form-control myform-control mb-2' type='text' name='lastname' value={user.lastname} onChange={handleChange} placeholder='Last Name' />
 													{errors && errors.lastname && <div style={{ color: "red" }}>{errors.lastname}</div>}
 												</div>
 											</div>
 											<div className='row'>
-												<div className='col-12 col-md-7'>
+												<div className='col-12 col-md-6'>
 													<input className='form-control myform-control mb-2' type='text' name='username' value={user.username} onBlur={validateUser} onChange={handleChange} placeholder='Username' />
 													{errors && errors.username && <div style={{ color: "red" }}>{errors.username}</div>}
 												</div>
-												<div className='col-12 col-md-5'>
-													<input className='form-control myform-control mb-2' type='password' name='password' value={user.password} onChange={handleChange} placeholder='Password' />
+												<div className='col-12 col-md-6'>
+													<input className='form-control myform-control mb-2' style={{ paddingRight: '35px' }} type={showPassword ? 'text' : 'password'} name='password' value={user.password} onChange={handleChange} placeholder='Password' />
+													{showPassword ? <i className="fa fa-eye" style={{ position: 'absolute', top: '11px', right: '24px' }} onClick={() => setShowPassword(false)}></i> :
+														<i className="fa fa-eye-slash" style={{ position: 'absolute', top: '11px', right: '24px' }} onClick={() => setShowPassword(true)}></i>}
 													{errors && errors.password && <div style={{ color: "red" }}>{errors.password}</div>}
 												</div>
 											</div>
 											<div className='row'>
-												<div className='col-12 col-md-7'>
+												<div className='col-12 col-md-6'>
 													<input className='form-control myform-control mb-2' type='text' name='email' value={user.email} onChange={handleChange} placeholder='Email' />
 													{errors && errors.email && <div style={{ color: "red" }}>{errors.email}</div>}
 												</div>
-												<div className='col-12 col-md-5'>
-													<input className='form-control myform-control mb-2' type='text' name='contact' value={user.contact} onChange={handleChange} placeholder='Mobile Number' />
-													{errors && errors.contact && <div style={{ color: "red" }}>{errors.contact}</div>}
+												<div className='col-12 col-md-6'>
+													<div className="d-flex justify-content-between">
+														<select name="dial_code" id="dial_code" className="form-control myform-control mb-2" value={user.dial_code} onChange={handleChange} style={{ maxWidth: '95px' }}>
+															{allCountryList.map(acl => <option key={acl.dial_code} value={acl.dial_code}>{acl.name} ({acl.dial_code})</option>)}
+														</select>
+														<div>
+															<input className='form-control myform-control mb-2' type='text' name='contact' value={user.contact} onChange={handleChange} placeholder='Mobile Number' />
+															{errors && errors.contact && <div style={{ color: "red" }}>{errors.contact}</div>}
+														</div>
+													</div>
 												</div>
 											</div>
 											<div className='row myform-check'>
@@ -180,6 +209,7 @@ function Signup() {
 		</>
 	);
 }
+
 export default Signup;
 // export async function getServerSideProps(context) {
 // 	try {

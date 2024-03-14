@@ -4,6 +4,7 @@ const model = {
   firstname: Joi.string().required().label("First Name"),
   lastname: Joi.string().required().label("Last Name"),
   contact: Joi.string().required().label("Mobile No"),
+  dial_code: Joi.string().required().label("Dial Code"),
   username: Joi.string().required().label("Username"),
   email: Joi.string().required().label("Email"),
   password: Joi.string().required().label("Password"),

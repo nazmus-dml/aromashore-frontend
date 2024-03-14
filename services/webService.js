@@ -17,3 +17,8 @@ export function addResellerRequest(data) {
     return http.post(
         apiUrl + `/web/resellerrequest/add`, data);
 }
+
+export function addWebRequest(data) {
+    return http.post(
+        apiUrl + `/web/webrequest/add`, data);
+}

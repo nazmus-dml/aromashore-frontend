@@ -6,16 +6,18 @@ import { login } from "../services/authService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AppStore } from "../store/AppStore";
-import Router from "next/router";
+import { useRouter } from "next/router";
 
-function Login({ previousUrl }) {
-	const { setUSER, user: loadUser } = useContext(AppStore);
+function Login() {
+	const router = useRouter();
+	const { setUSER } = useContext(AppStore);
 	const [user, setUser] = useState({
 		username: "",
 		password: "",
 		rememberMe: false
 	});
 	const [errors, setErrors] = useState({});
+	const [showPassword, setShowPassword] = useState(false);
 
 	const handleChange = (e) => {
 		var errorsCopy = { ...errors };
@@ -28,14 +30,8 @@ function Login({ previousUrl }) {
 		setUser(userCopy);
 	};
 
-	const handleInputCheck = (e) => {
-		let userCopy = { ...user };
-		userCopy[e.currentTarget.name] = e.target.checked;
-		setUser(userCopy);
-	};
-
 	const handleSubmit = async (e) => {
-		console.log('handleSubmit', user);
+		// console.log('handleSubmit', user);
 		e.preventDefault();
 		const errorsCopy = loginValidate(user);
 		setErrors(errorsCopy);
@@ -45,7 +41,7 @@ function Login({ previousUrl }) {
 			toast(data.appMessage);
 			if (data.appStatus == false) return;
 			setUSER(data.appData);
-			Router.push('/');
+			router.push('/');
 		} catch (error) { }
 	};
 
@@ -60,7 +56,7 @@ function Login({ previousUrl }) {
 								<div className='sign-up__card'>
 									<div className='sign-up__card-body'>
 										<div className='mt-2'>
-											<p className='login-em'>Login Form</p>
+											<p className='login-em'>Login</p>
 										</div>
 										<form className='mt-4' onSubmit={handleSubmit}>
 											<div className='myform-group'>
@@ -70,8 +66,10 @@ function Login({ previousUrl }) {
 												</div>
 											</div>
 											<div className='myform-group'>
-												<div className='col-12'>
-													<input className='form-control myform-control' type='password' name='password' value={user.password} onChange={handleChange} placeholder='Enter Password' />
+												<div className='col-12 position-relative'>
+													<input className='form-control myform-control' style={{ paddingRight: '35px' }} type={showPassword ? 'text' : 'password'} name='password' value={user.password} onChange={handleChange} placeholder='Enter Password' />
+													{showPassword ? <i className="fa fa-eye" style={{ position: 'absolute', top: '11px', right: '24px' }} onClick={() => setShowPassword(false)}></i> :
+														<i className="fa fa-eye-slash" style={{ position: 'absolute', top: '11px', right: '24px' }} onClick={() => setShowPassword(true)}></i>}
 													{errors && errors.password && <div style={{ color: "red" }}>{errors.password}</div>}
 												</div>
 											</div>
@@ -90,9 +88,9 @@ function Login({ previousUrl }) {
 											</div>
 											<div className='row mt-4 text-center'>
 												<div className='col-12'>
-													<a className='my-link' href=''>
+													<Link href='/forgot-password' className="text-primary">
 														Forgot your Password?
-													</a>
+													</Link>
 												</div>
 												<div className='col-12 mt-2'>
 													<Link href='/signup' className="text-primary">
@@ -117,6 +115,7 @@ export default Login;
 export async function getServerSideProps(context) {
 	console.log("LOGIN -- getServerSideProps", context.req.headers.referer);
 	const previousUrl = context.req.headers.referer ? context.req.headers.referer : "/";
+	console.log(previousUrl);
 	try {
 		const user = context.req.cookies.user ? JSON.parse(context.req.cookies.user) : null;
 		if (user) {

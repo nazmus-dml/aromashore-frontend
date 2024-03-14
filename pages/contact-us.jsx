@@ -1,20 +1,17 @@
 import React, { useState } from "react";
 import Layout from "../layouts/Layout";
 import Link from "next/link";
-import { addResellerRequest } from "../services/webService";
+import { addWebRequest } from "../services/webService";
 import { toast, ToastContainer } from "react-toastify";
 import moment from "moment";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function ContactUs() {
 	const [bean, setBean] = useState({
-		firstname: "",
-		lastname: "",
-		company: "",
+		name: "",
 		contact: "",
 		email: "",
 		message: "",
-		comments: ""
 	});
 	const handleChange = (e) => {
 		bean[e.target.name] = e.target.value;
@@ -32,8 +29,15 @@ export default function ContactUs() {
 			request_time
 		};
 		try {
-			let { data } = await addResellerRequest(rsrq);
+			let { data } = await addWebRequest(rsrq);
 			toast(data.appMessage);
+			if (!data.appStatus) return;
+			setBean({
+				name: "",
+				contact: "",
+				email: "",
+				message: "",
+			});
 		} catch (error) {
 			console.log(error);
 		}
@@ -62,19 +66,9 @@ export default function ContactUs() {
 								</div>
 								<form onSubmit={handleSubmit} className='cta__form__detail validated-form'>
 									<div className="row">
-										<div className="col-12 col-md-6">
-											<div className='input-validator'>
-												<input type='text' placeholder='First Name' name='firstname' value={bean.firstname} onChange={handleChange} required='required' />
-											</div>
-										</div>
-										<div className="col-12 col-md-6">
-											<div className='input-validator'>
-												<input type='text' placeholder='Last Name' name='lastname' value={bean.lastname} onChange={handleChange} required='required' />
-											</div>
-										</div>
 										<div className="col-12 col-md-12">
 											<div className='input-validator'>
-												<input type='text' placeholder='Company Name' name='company' value={bean.company} onChange={handleChange} required='required' />
+												<input type='text' placeholder='Full Name' name='name' value={bean.name} onChange={handleChange} required='required' />
 											</div>
 										</div>
 										<div className="col-12 col-md-6">
@@ -87,14 +81,9 @@ export default function ContactUs() {
 												<input type='text' placeholder='Email' name='email' value={bean.email} onChange={handleChange} required='required' />
 											</div>
 										</div>
-										<div className="col-12 col-md-6">
+										<div className="col-12 col-md-12">
 											<div className='input-validator'>
 												<textarea placeholder='Message' name='message' value={bean.message} onChange={handleChange} className='form-control' rows='3' />
-											</div>
-										</div>
-										<div className="col-12 col-md-6">
-											<div className='input-validator'>
-												<textarea placeholder='Comments' name='comments' value={bean.comments} onChange={handleChange} className='form-control' rows='3' />
 											</div>
 										</div>
 										<div className="col-12 text-end">
