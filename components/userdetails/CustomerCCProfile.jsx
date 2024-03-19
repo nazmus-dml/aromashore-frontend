@@ -300,7 +300,6 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 				position: "top-right",
 				autoClose: 5000
 			});
-
 			return;
 		};
 

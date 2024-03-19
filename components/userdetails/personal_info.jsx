@@ -176,6 +176,7 @@ export default function PersonalInfo({ user, profile }) {
 				toast(res.data.appMessage);
 				if (res.data.appStatus) {
 					setShowPersonalInfoModal(false);
+					setShowContactInfoModal(false)
 				}
 			});
 		} catch (error) { }
@@ -543,10 +544,10 @@ export default function PersonalInfo({ user, profile }) {
 							</div>
 
 							<div className='mb-3'>
-								<label htmlFor='location' className='form-label'>
+								<label htmlFor='terms' className='form-label'>
 									Payment Terms
 								</label>
-								<select className='form-select' name='terms' value={bean.terms ? bean.terms : ""} onChange={handleChange}>
+								<select className='form-select' name='terms' id="terms" value={bean.terms ? bean.terms : ""} onChange={handleChange}>
 									<option value=''>select item</option>
 									{termsTypeList.map((item, i) => {
 										return (
@@ -561,7 +562,8 @@ export default function PersonalInfo({ user, profile }) {
 								<label htmlFor='location' className='form-label'>
 									Location
 								</label>
-								<select className='form-select' name='location' value={bean.location ? bean.location : ""} onChange={handleChange}>
+								<input type='text' className='form-control' id='location' name='location' value={bean.location ? bean.location : ""} onChange={handleChange} placeholder='Location' />
+								{/* <select className='form-select' name='location' id="location" value={bean.location ? bean.location : ""} onChange={handleChange}>
 									<option value=''>select item</option>
 									{locationList.map((item, i) => {
 										return (
@@ -570,13 +572,14 @@ export default function PersonalInfo({ user, profile }) {
 											</option>
 										);
 									})}
-								</select>
+								</select> */}
 							</div>
 							<div className='mb-3'>
 								<label htmlFor='zone' className='form-label'>
 									Zone
 								</label>
-								<select className='form-select' name='zone' value={bean.zone ? bean.zone : ""} onChange={handleChange}>
+								<input type='text' className='form-control' id='zone' name='zone' value={bean.zone ? bean.zone : ""} onChange={handleChange} placeholder='Zone' />
+								{/* <select className='form-select' name='zone' id='zone' value={bean.zone ? bean.zone : ""} onChange={handleChange}>
 									<option value=''>select item</option>
 									{zoneList.map((item, i) => {
 										return (
@@ -585,7 +588,7 @@ export default function PersonalInfo({ user, profile }) {
 											</option>
 										);
 									})}
-								</select>
+								</select> */}
 							</div>
 						</div>
 						<div className='col-12 col-md-4'>
@@ -642,9 +645,7 @@ export default function PersonalInfo({ user, profile }) {
 					</Button>
 					<Button
 						variant='primary'
-						onClick={() => {
-							handlePersonalProfileSubmit();
-						}}>
+						onClick={handlePersonalProfileSubmit}>
 						Update
 					</Button>
 				</Modal.Footer>
@@ -734,9 +735,7 @@ export default function PersonalInfo({ user, profile }) {
 					</Button>
 					<Button
 						variant='primary'
-						onClick={() => {
-							handlePersonalProfileSubmit();
-						}}>
+						onClick={handlePersonalProfileSubmit}>
 						Update
 					</Button>
 				</Modal.Footer>
