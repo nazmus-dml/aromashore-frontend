@@ -29,12 +29,28 @@ function MyApp({
     localStorage.setItem("cart", JSON.stringify(cart));
   };
 
-  const add_TO_CART = ({ product, unit }) => {
-    // console.log(product, unit);
+  const add_TO_CART = ({ productDetails, unit }) => {
+    console.log('_app add_TO_CART ----> ', productDetails, unit);
+
+    const cartData = {
+      "variation_id": unit.id,
+      "price": unit.price,
+      "size": unit.size,
+      "size_unit": unit.size_unit,
+      "quantity": unit.qty,
+      "weight": "317.47",
+      "category_id": productDetails.productcategoryId,
+      "product_id": productDetails.id,
+      "product_no": productDetails.product_no,
+      "product_name": productDetails.name
+    };
+
+    console.log('cartData --------->>', cartData);
+
     // console.log('old cart',cart);
-    if (product.productproperties.length > 0) {
+    if (productDetails.productproperties.length > 0) {
       let copyCart = [...cart];
-      const findCartItem = copyCart.find((item) => product.id === item.id);
+      const findCartItem = copyCart.find((item) => productDetails.id === item.id);
       // console.log('copyCart', findCartItem);
       if (findCartItem) {
         const foundIndex = copyCart.findIndex(
@@ -59,16 +75,16 @@ function MyApp({
           };
         }
       } else {
-        copyCart = [...copyCart, { ...product, units: [unit] }];
+        copyCart = [...copyCart, { ...productDetails, units: [unit] }];
       }
       console.log(copyCart);
       saveCartToLocalStorage(copyCart);
     }
   };
 
-  const delete_ITEM_FROM_CART = ({ product, unit }) => {
+  const delete_ITEM_FROM_CART = ({ productDetails, unit }) => {
     let copyCart = [...cart];
-    const findCartItem = copyCart.find((item) => product.id == item.id);
+    const findCartItem = copyCart.find((item) => productDetails.id == item.id);
     if (findCartItem) {
       const foundIndex = copyCart.findIndex(
         (item) => findCartItem.id == item.id
@@ -85,7 +101,7 @@ function MyApp({
           };
         } else {
           const filteredCart = copyCart.filter(
-            (item) => item.id !== product.id
+            (item) => item.id !== productDetails.id
           );
           copyCart = [...filteredCart];
           localStorage.removeItem("cart");
@@ -97,9 +113,9 @@ function MyApp({
     saveCartToLocalStorage(copyCart);
   };
 
-  const increment_TO_CART_ITEM = ({ product, unit }) => {
+  const increment_TO_CART_ITEM = ({ productDetails, unit }) => {
     let copyCart = [...cart];
-    const findCartItem = copyCart.find((item) => product.id == item.id);
+    const findCartItem = copyCart.find((item) => productDetails.id == item.id);
     if (findCartItem) {
       const foundIndex = copyCart.findIndex(
         (item) => findCartItem.id == item.id
@@ -125,9 +141,9 @@ function MyApp({
     saveCartToLocalStorage(copyCart);
   };
 
-  const decrement_TO_CART_ITEM = ({ product, unit }) => {
+  const decrement_TO_CART_ITEM = ({ productDetails, unit }) => {
     let copyCart = [...cart];
-    const findCartItem = copyCart.find((item) => product.id == item.id);
+    const findCartItem = copyCart.find((item) => productDetails.id == item.id);
     if (findCartItem) {
       const foundIndex = copyCart.findIndex(
         (item) => findCartItem.id == item.id

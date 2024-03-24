@@ -9,6 +9,7 @@ import MuixDatePicker from "../common/DatePicker";
 
 
 export default function CustomerCCProfile({ customerId, creditCard = [] }) {
+	console.log(customerId, creditCard)
 	const [ccProfileModalState, setccProfileModalState] = useState(false);
 	const [ccProfileList, setccProfileList] = useState([]);
 
@@ -28,7 +29,6 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 		value: 0,
 		label: ""
 	});
-
 
 	const [ccProfile, setccProfile] = useState({
 		card_type: "",
@@ -51,7 +51,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 	});
 
 	const cardMaxDate = moment().add(9, "years");
-	const CVV_REGEX = new RegExp(/^[1-9]{1}[0-9]{3}$/gim);
+	const CVV_REGEX = new RegExp(/^\+?[0-9]+$/gim);
 	const CARD_NO_REGEX = new RegExp(/^[1-9]{1}[0-9]{15}$/gim);
 	const PHONE_REGEX = new RegExp(/^[+]?(\d{1,2})?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/gim);
 	const ZIPCODE_REGEX = new RegExp(/^\+?[0-9]+$/gim);
@@ -83,7 +83,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 
 					const customCountryList = [];
 					tempCountryList.map((cl) => {
-						const country = { value: cl.id, label: `${cl.name}` };
+						const country = { value: cl.id, label: `${cl.name} (${cl.code})` };
 						customCountryList.push(country);
 						return true;
 					});
@@ -213,8 +213,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 		const value = event.value;
 		const nameNCode = event.label.split("(");
 		const label = nameNCode[0];
-		// const code = nameNCode[1].toString().slice(0, -1); saif
-		const code = value;
+		const code = nameNCode[1].toString().slice(0, -1);
 		if (value) {
 			getStatesByCountryId(value)
 				.then(function (response) {
@@ -225,7 +224,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 						const tempStateList = response.data["appData"];
 						const customStateList = [];
 						tempStateList.map((cl) => {
-							const state = { value: cl.id, label: `${cl.name}` };
+							const state = { value: cl.id, label: `${cl.name} (${cl.code})` };
 							customStateList.push(state);
 							return true;
 						});
@@ -249,8 +248,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 		const value = event.value;
 		const nameNCode = event.label.split("(");
 		const label = nameNCode[0];
-		// const code = nameNCode[1].toString().slice(0, -1);
-		const code = value;
+		const code = nameNCode[1].toString().slice(0, -1);
 		if (value) {
 			getCitiesByStateId(value)
 				.then(function (response) {
@@ -261,8 +259,8 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 						const tempCityList = response.data["appData"];
 						const customCityList = [];
 						tempCityList.map((cl) => {
-							const state = { value: cl.id, label: cl.name };
-							customCityList.push(state);
+							const city = { value: cl.id, label: cl.name, tax_rate: cl.tax_rate };
+							customCityList.push(city);
 							return true;
 						});
 						setCCProfileCityList(customCityList);
@@ -275,7 +273,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 			setCCProfileCityList([]);
 		}
 		setccProfile((values) => ({ ...values, state: value, state_name: label, state_code: code }));
-		setccProfile((values) => ({ ...values, city: "", city_name: "" }));
+		setccProfile((values) => ({ ...values, city: "", city_name: "", tax_rate: 0 }));
 		setSelectedCCProfileState({ value: value, label: `${label} (${code})` });
 		setSelectedCCProfileCity({ value: 0, label: "" });
 	};
@@ -283,10 +281,10 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 	const handleCCProfileCityInputChange = (event) => {
 		const value = event.value;
 		const label = event.label;
-		let selectedCityDetail = { value: 0, label: "" };
+		let selectedCityDetail = { value: 0, label: "", tax_rate: 0 };
 		selectedCityDetail = ccProfileCityList.find((cl) => cl.value === value);
 		// console.log(selectedCityDetail);
-		setccProfile((values) => ({ ...values, city: value, city_name: label }));
+		setccProfile((values) => ({ ...values, city: value, city_name: label, tax_rate: selectedCityDetail.tax_rate }));
 		setSelectedCCProfileCity({ value: value, label: label });
 	};
 
@@ -534,7 +532,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 								<input className='form-control' id='cvv' name='cvv' value={ccProfile.cvv} onChange={handleCCProfileChange} />
 								{validation.cvv ? (
 									<small title='Example: 1234'>
-										<code>Must be 4 Digit</code>
+										<code>Must be Digit</code>
 									</small>
 								) : (
 									""
@@ -544,7 +542,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 						<div className='col-12 col-md-4'>
 							<div className='mb-2'>
 								<MuixDatePicker
-									label='Expiration Date (month/year)*'
+									label='Expiry Date (mm/yyyy)*'
 									inputFormat='MM/yyyy'
 									manualEntry={true}
 									maxDate={new Date(cardMaxDate)}
@@ -552,7 +550,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 									value={ccProfile.expiration_date}
 									setValue={(value) => handleCCProfileChange({ target: { name: "expiration_date", value: value } })}
 								/>
-								<p>Insert Date Picker</p>
+								{/* <p>Insert Date Picker</p> */}
 							</div>
 						</div>
 						{/* <div className='col-12 col-md-4'>

@@ -2,11 +2,12 @@ import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { validatePasswordChange } from "../../models/user";
 import { changeProfilePassword, updateprofileByCustomer } from "../../services/webCustomerService";
-
+import { getCitiesByStateId, getCountriesList, getStatesByCountryId } from "../../services/publicContentsService";
 
 const groupTypeList = [
 	{ value: 1, name: "Group 1" },
@@ -38,16 +39,6 @@ const termsTypeList = [
 	{ value: 7, name: "On Receipt" }
 ];
 
-const zoneList = [
-	{ value: 1, name: "Zone" },
-	{ value: 2, name: "COD Cash" },
-	{ value: 3, name: "CC Charge" },
-	{ value: 4, name: "CC Prepaid" },
-	{ value: 5, name: "Pre-Paid" },
-	{ value: 6, name: "30 Days Net" },
-	{ value: 7, name: "On Receipt" }
-];
-
 const serviceTypeList = [
 	{ value: 1, name: "Ground" },
 	{ value: 2, name: "2nd Day" },
@@ -56,83 +47,84 @@ const serviceTypeList = [
 	{ value: 5, name: "7 Day" }
 ];
 
-const locationList = [
-	{ value: 1, name: "Location" },
-	{ value: 2, name: "COD Cash" },
-	{ value: 3, name: "CC Charge" },
-	{ value: 4, name: "CC Prepaid" },
-	{ value: 5, name: "Pre-Paid" },
-	{ value: 6, name: "30 Days Net" },
-	{ value: 7, name: "On Receipt" }
-];
-
 const getNameFromListById = (list, id) => {
-
 	let data = {
 		name: ""
 	};
-
 	data = list.find((al) => al.value === Number(id));
-
 	return data?.name || "";
 };
 
 export default function PersonalInfo({ user, profile }) {
 	console.log(user, profile)
 	let basicInfo = {
-		customer_no: profile?.customer_no,
-		firstname: profile?.firstname,
-		lastname: profile?.lastname,
-		company: profile?.company,
-		contact: profile?.contact,
-		username: profile?.username,
-		email: profile?.email,
+		customer_no: '',
+		firstname: '',
+		lastname: '',
+		company: '',
+		contact: '',
+		username: '',
+		email: '',
 		created_by: new Date(),
-		customercategoryId: profile?.customercategory?.id,
-		status: profile?.status
+		customercategoryId: '',
+		status: ''
 	};
-	let subscription;
-	let order_info_notification = profile?.customerprofile?.order_info_notification;
-	if (profile?.customerprofile?.subscription) {
-		subscription = JSON.parse(profile?.customerprofile.subscription);
-	}
-	if (profile?.customerprofile?.order_info_notification) {
-		order_info_notification = JSON.parse(profile?.customerprofile?.order_info_notification);
-	}
 	let profileInfo = {
-		race: profile?.customerprofile?.race,
-		group: profile?.customerprofile?.group,
-		billing_address: profile?.customerprofile?.billing_address,
-		cc_profile: profile?.customerprofile?.cc_profile,
-		service: profile?.customerprofile?.service,
-		location: profile?.customerprofile?.location,
-		zone: profile?.customerprofile?.zone,
-		tax_id: profile?.customerprofile?.tax_id,
-		limit: profile?.customerprofile?.limit,
-		carrier: profile?.customerprofile?.carrier,
+		race: '1',
+		group: '1',
+		billing_address: '',
+		cc_profile: '',
+		service: '1',
+		location: '',
+		zone: '',
+		tax_id: '',
+		limit: '',
+		carrier: '1',
 		subscription: {
-			subscriptionEmail: subscription?.subscriptionEmail,
-			subscriptionText: subscription?.subscriptionText
+			subscriptionEmail: false,
+			subscriptionText: false
 		},
 		order_info_notification: {
-			orderInfoNotificationEmail: order_info_notification?.orderInfoNotificationEmail,
-			orderInfoNotificationText: order_info_notification?.orderInfoNotificationText
+			orderInfoNotificationEmail: false,
+			orderInfoNotificationText: false
 		},
 		manager_remarks: "",
 		employee_remarks: "",
 		terms: "2"
 	};
 	let customercontact = {
-		phone_no: profile?.customercontact?.phone_no,
-		fax: profile?.customercontact?.fax,
-		address_line_one: profile?.customercontact?.address_line_one,
-		address_line_two: profile?.customercontact?.address_line_two,
-		city: profile?.customercontact?.city,
-		state: profile?.customercontact?.state,
-		zipcode: profile?.customercontact?.zipcode,
-		country: profile?.customercontact?.country,
-		shipping_address: profile?.customercontact?.shipping_address
+		phone_no: '',
+		fax: '',
+		address_line_one: '',
+		address_line_two: '',
+
+		country: '',
+		country_code: "",
+		country_name: "",
+		state: '',
+		state_code: "",
+		state_name: "",
+		city: '',
+		city_name: "",
+
+		zipcode: '',
+		shipping_address: ''
 	};
+	const [profileCountryList, setProfileCountryList] = useState([]);
+	const [selectedProfileCountry, setSelectedProfileCountry] = useState({
+		value: 0,
+		label: ""
+	});
+	const [profileStateList, setProfileStateList] = useState([]);
+	const [selectedProfileState, setSelectedProfileState] = useState({
+		value: 0,
+		label: ""
+	});
+	const [profileCityList, setProfileCityList] = useState([]);
+	const [selectedProfileCity, setSelectedProfileCity] = useState({
+		value: 0,
+		label: ""
+	});
 	const [showPersonalInfoModal, setShowPersonalInfoModal] = useState(false);
 	const [showContactInfoModal, setShowContactInfoModal] = useState(false);
 	const [bean, setBean] = useState({
@@ -142,9 +134,108 @@ export default function PersonalInfo({ user, profile }) {
 	});
 
 	useEffect(() => {
+		console.log('getCountriesList');
+		getCountriesList()
+			.then(function (response) {
+				console.log(response);
+				if (response.status === 200 && !response.data["appStatus"]) {
+					setProfileCountryList([]);
+				} else {
+					const tempCountryList = response.data["appData"];
+					// console.log(tempCountryList);
+					const customCountryList = [];
+					tempCountryList.map((cl) => {
+						const country = { value: cl.id, label: `${cl.name} (${cl.code})` };
+						customCountryList.push(country);
+						return true;
+					});
+					setProfileCountryList(customCountryList);
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+		handleProfileCountryInputChange({ value: 187, label: "United State of America (US)" });
+		renderForm();
+	}, []);
+
+	useEffect(() => {
 		const personal_data = JSON.stringify(bean);
 		Cookies.set("personal-data", personal_data);
 	}, [bean]);
+
+	const renderForm = () => {
+		console.log('renderForm');
+		let subscription;
+		let order_info_notification = profile?.customerprofile?.order_info_notification;
+		if (profile?.customerprofile?.subscription) {
+			subscription = JSON.parse(profile?.customerprofile.subscription);
+		}
+		if (profile?.customerprofile?.order_info_notification) {
+			order_info_notification = JSON.parse(profile?.customerprofile?.order_info_notification);
+		}
+
+		handleProfileCountryInputChange({ value: Number(profile.customercontact.country), label: `${profile.customercontact.country_name} (${profile.customercontact.country_code})` });
+        if (profile.customercontact.state) {
+            handleProfileStateInputChange({ value: Number(profile.customercontact.state), label: `${profile.customercontact.state_name} (${profile.customercontact.state_code})` });
+        }
+        if (profile.customercontact.city) {
+            handleProfileCityInputChange({ value: Number(profile.customercontact.city), label: profile.customercontact.city_name });
+        }
+
+		setBean({
+			customer_no: profile?.customer_no,
+			firstname: profile?.firstname,
+			lastname: profile?.lastname,
+			company: profile?.company,
+			contact: profile?.contact,
+			username: profile?.username,
+			email: profile?.email,
+			created_by: new Date(),
+			customercategoryId: profile?.customercategory?.id,
+			status: profile?.status,
+
+			race: profile?.customerprofile?.race,
+			group: profile?.customerprofile?.group,
+			billing_address: profile?.customerprofile?.billing_address,
+			cc_profile: profile?.customerprofile?.cc_profile,
+			service: profile?.customerprofile?.service,
+			location: profile?.customerprofile?.location,
+			zone: profile?.customerprofile?.zone,
+			tax_id: profile?.customerprofile?.tax_id,
+			limit: profile?.customerprofile?.limit,
+			carrier: profile?.customerprofile?.carrier,
+			subscription: {
+				subscriptionEmail: subscription?.subscriptionEmail,
+				subscriptionText: subscription?.subscriptionText
+			},
+			order_info_notification: {
+				orderInfoNotificationEmail: order_info_notification?.orderInfoNotificationEmail,
+				orderInfoNotificationText: order_info_notification?.orderInfoNotificationText
+			},
+			manager_remarks: "",
+			employee_remarks: "",
+			terms: "2",
+
+			phone_no: profile?.customercontact?.phone_no,
+			fax: profile?.customercontact?.fax,
+			address_line_one: profile?.customercontact?.address_line_one,
+			address_line_two: profile?.customercontact?.address_line_two,
+
+			country: profile?.customercontact?.country,
+			country_code: profile?.customercontact?.country_code,
+			country_name: profile?.customercontact?.country_name,
+			state: profile?.customercontact?.state,
+			state_code: profile?.customercontact?.state_code,
+			state_name: profile?.customercontact?.state_name,
+			city: profile?.customercontact?.city,
+			city_name: profile?.customercontact?.city_name,
+
+			zipcode: profile?.customercontact?.zipcode,
+			shipping_address: profile?.customercontact?.shipping_address
+		});
+	}
 
 	const handleChange = (e) => {
 		bean[e.target.name] = e.target.value;
@@ -163,7 +254,89 @@ export default function PersonalInfo({ user, profile }) {
 		setBean(beanCopy);
 	};
 
+	const handleProfileCountryInputChange = (event) => {
+		const value = event.value;
+		const nameNCode = event.label.split("(");
+		const label = nameNCode[0];
+		const code = nameNCode[1].toString().slice(0, -1);
+		if (value) {
+			getStatesByCountryId(value)
+				.then(function (response) {
+					console.log(response);
+					if (response.status === 200 && !response.data["appStatus"]) {
+						setProfileStateList([]);
+					} else {
+						const tempStateList = response.data["appData"];
+						const customStateList = [];
+						tempStateList.map((cl) => {
+							const state = { value: cl.id, label: `${cl.name} (${cl.code})` };
+							customStateList.push(state);
+							return true;
+						});
+						setProfileStateList(customStateList);
+					}
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		} else {
+			setProfileStateList([]);
+		}
+		setBean((values) => ({ ...values, country: value, country_name: label, country_code: code }));
+		setBean((values) => ({ ...values, state: "", state_name: "", state_code: "", city: "", city_name: "" }));
+		setSelectedProfileCountry({ value: value, label: `${label} (${code})` });
+		setSelectedProfileState({ value: 0, label: "" });
+		setSelectedProfileCity({ value: 0, label: "" });
+	};
+
+	const handleProfileStateInputChange = (event) => {
+		const value = event.value;
+		const nameNCode = event.label.split("(");
+		const label = nameNCode[0];
+		const code = nameNCode[1].toString().slice(0, -1);
+		if (value) {
+			getCitiesByStateId(value)
+				.then(function (response) {
+					console.log(response);
+					if (response.status === 200 && !response.data["appStatus"]) {
+						setProfileCityList([]);
+					} else {
+						const tempCityList = response.data["appData"];
+						const customCityList = [];
+						tempCityList.map((cl) => {
+							const city = { value: cl.id, label: cl.name, tax_rate: cl.tax_rate };
+							customCityList.push(city);
+							return true;
+						});
+						setProfileCityList(customCityList);
+					}
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
+		} else {
+			setProfileCityList([]);
+		}
+		setBean((values) => ({ ...values, state: value, state_name: label, state_code: code }));
+		setBean((values) => ({ ...values, city: "", city_name: "", tax_rate: 0 }));
+		setSelectedProfileState({ value: value, label: `${label} (${code})` });
+		setSelectedProfileCity({ value: 0, label: "" });
+	};
+
+	const handleProfileCityInputChange = (event) => {
+		const value = event.value;
+		const label = event.label;
+		let selectedCityDetail = { value: 0, label: '', tax_rate: 0 };
+		if (profileCityList.length > 0) {
+			selectedCityDetail = profileCityList.find((cl) => cl.value === value);
+		}
+		// console.log(selectedCityDetail);
+		setBean((values) => ({ ...values, city: value, city_name: label, tax_rate: selectedCityDetail.tax_rate }));
+		setSelectedProfileCity({ value: value, label: label });
+	};
+
 	const handlePersonalProfileSubmit = () => {
+		console.log(bean);
 		try {
 			let result = updateprofileByCustomer({
 				...bean,
@@ -281,9 +454,9 @@ export default function PersonalInfo({ user, profile }) {
 												{/* zone + location */}
 												<tr>
 													<th>Zone</th>
-													<td>{getNameFromListById(zoneList, bean.zone)}</td>
+													<td>{bean.zone}</td>
 													<th>Location</th>
-													<td>{getNameFromListById(locationList, bean.location)}</td>
+													<td>{bean.location}</td>
 												</tr>
 
 												{/* service + carrier */}
@@ -339,13 +512,13 @@ export default function PersonalInfo({ user, profile }) {
 												</tr>
 												<tr>
 													<th>City</th>
-													<td>{bean.city}</td>
+													<td>{bean.city_name}</td>
 													<th>State</th>
-													<td>{bean.state}</td>
+													<td>{bean.state_name}</td>
 												</tr>
 												<tr>
 													<th>Country</th>
-													<td>{bean.country}</td>
+													<td>{bean.country_name}</td>
 													<th>Zip Code</th>
 													<td>{bean.zipcode}</td>
 												</tr>
@@ -699,6 +872,26 @@ export default function PersonalInfo({ user, profile }) {
 						</div>
 						<div className='col-12 col-md-4'>
 							<div className='mb-3'>
+								<label className='d-block'>Country</label>
+								<Select options={profileCountryList} value={selectedProfileCountry} onChange={(event) => handleProfileCountryInputChange(event)} required />
+							</div>
+							<div className='mb-3'>
+								<label className='d-block'>State/Division</label>
+								{profile.country !== "" && profileStateList.length > 0 ? (
+									<Select options={profileStateList} value={selectedProfileState} onChange={(event) => handleProfileStateInputChange(event)} required />
+								) : (
+									<input className='form-control' type='text' name='state_name' value={bean.state_name} onChange={handleChange} />
+								)}
+							</div>
+							<div className='mb-3'>
+								<label className='d-block'>City</label>
+								{profile.state !== "" && profileCityList.length > 0 ? (
+									<Select options={profileCityList} value={selectedProfileCity} onChange={(event) => handleProfileCityInputChange(event)} required />
+								) : (
+									<input className='form-control' type='text' name='city_name' value={bean.city_name} onChange={handleChange} />
+								)}
+							</div>
+							{/* <div className='mb-3'>
 								<label htmlFor='lastName' className='form-label'>
 									City
 								</label>
@@ -709,19 +902,19 @@ export default function PersonalInfo({ user, profile }) {
 									State/Division
 								</label>
 								<input type='text' className='form-control' id='state' name='state' value={bean.state ? bean.state : ""} onChange={handleChange} placeholder='State' />
-							</div>
+							</div> */}
 							<div className='mb-3'>
 								<label htmlFor='zipcode' className='form-label'>
 									<span>*</span>Zip code
 								</label>
 								<input type='text' className='form-control' id='zipcode' name='zipcode' value={bean.zipcode ? bean.zipcode : ""} onChange={handleChange} placeholder='Zip code ' />
 							</div>
-							<div className='mb-3'>
+							{/* <div className='mb-3'>
 								<label htmlFor='country' className='form-label'>
 									Country
 								</label>
 								<input type='text' className='form-control' id='country' name='country' value={bean.country ? bean.country : ""} onChange={handleChange} placeholder='Country' />
-							</div>
+							</div> */}
 						</div>
 					</div>
 				</Modal.Body>
