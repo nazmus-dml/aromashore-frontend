@@ -16,7 +16,9 @@ export default function HeaderNavigation({ openCart }) {
 	const [inputValue, setInputValue] = useState();
 	// const { state } = useContext(AppContext);
 	const [menuList, setMenuList] = useState([]);
+	const [selectedMenu, setSelectedMenu] = useState(null);
 	const [selectedCategory, setSelectedCategory] = useState(null);
+	const [selectedCategoryWiseAllProduct, setSelectedCategoryWiseAllProduct] = useState([]);
 	const [productList, setProductList] = useState([]);
 	const [filteredProductList, setFilteredProductList] = useState([]);
 	// let { totalQty } = calculateCart(cart);
@@ -26,7 +28,7 @@ export default function HeaderNavigation({ openCart }) {
 	useEffect(() => {
 		// console.log('header', cart)
 		axios.get(apiUrl + "/web/get/webmenu").then((response) => {
-			// console.log("waiting end", response);
+			console.log("waiting end", response);
 			if (response.data.appStatus) {
 				// const bottomMenuList = response.data.appData;
 				// let bottomMenuListCopy = bottomMenuList?.map((item) => {
@@ -52,12 +54,39 @@ export default function HeaderNavigation({ openCart }) {
 			});
 	}, []);
 
+	const handleSelectMenu = (menu) => {
+		console.log(menu);
+		if (menu !== null) {
+			setSelectedMenu(menu);
+			handleSelectedMenuAllProduct(menu.productcategories);
+			setSelectedCategory(null);
+		} else {
+			setSelectedMenu(null);
+			handleSelectedMenuAllProduct(null);
+			setSelectedCategory(null);
+		}
+	};
+
 	const handleSelectCategory = (category) => {
 		console.log(category);
 		if (category !== null) {
 			setSelectedCategory(category);
 		} else {
 			setSelectedCategory(null);
+		}
+	};
+
+	const handleSelectedMenuAllProduct = (allCategoryProduct) => {
+		console.log(allCategoryProduct);
+		const allProductFromSelectedMenu = [];
+		if (allCategoryProduct !== null && allCategoryProduct.length > 0) {
+			allCategoryProduct.map(acp => {
+				console.log(acp.products);
+				allProductFromSelectedMenu.push(...acp.products);
+			})
+			setSelectedCategoryWiseAllProduct(allProductFromSelectedMenu);
+		} else {
+			setSelectedCategoryWiseAllProduct([]);
 		}
 	};
 
@@ -95,30 +124,30 @@ export default function HeaderNavigation({ openCart }) {
 						</div>
 						<div className='offcanvas-body'>
 							<ul className='navbar-nav mr-auto desktop-tablet-view'>
-								{menuList?.map((category, i) => {
+								{menuList?.map((menu, i) => {
 									if (i <= 4) {
 										return (
-											<li key={category.id} className='nav-item' onClick={() => handleSelectCategory(category)}>
+											<li key={menu.id} className='nav-item' onClick={() => handleSelectMenu(menu)}>
 												<a className='nav-link' href='#'>
-													{category.category_name}
+													{menu.name}
 													<i className='fas fa-angle-down ms-2'></i>
 												</a>
 											</li>
 										);
 									}
 								})}
-								{menuList.length > 4 ? (
+								{menuList.length > 5 ? (
 									<div className='dropdown'>
 										<li className='nav-item'>
 											<a className='nav-link' href='#' data-bs-toggle='dropdown' aria-expanded='false'>
 												More<i className='fas fa-angle-down ms-2'></i>
 											</a>
 											<div className='dropdown-menu'>
-												{menuList?.map((category, i) => {
+												{menuList?.map((menu, i) => {
 													if (i > 4) {
 														return (
-															<a key={category.id} className='dropdown-item' href='#' onClick={() => handleSelectCategory(category)}>
-																{category.category_name}
+															<a key={menu.id} className='dropdown-item' href='#' onClick={() => handleSelectMenu(menu)}>
+																{menu.name}
 															</a>
 														);
 													}
@@ -131,10 +160,10 @@ export default function HeaderNavigation({ openCart }) {
 								)}
 							</ul>
 							<ul className='navbar-nav mr-auto mobile-view'>
-								{menuList?.map((category, i) => (
-									<li key={category.id} className='nav-item' onClick={() => handleSelectCategory(category)}>
+								{menuList?.map((menu, i) => (
+									<li key={menu.id} className='nav-item' onClick={() => handleSelectMenu(menu)}>
 										<a className='nav-link' href='#'>
-											{category.category_name}
+											{menu.name}
 											<i className='fas fa-angle-down ms-2'></i>
 										</a>
 									</li>
@@ -216,9 +245,9 @@ export default function HeaderNavigation({ openCart }) {
 											<ListGroup.Item className='result-item'>
 												{product.productimages[0] ? <Image src={product.productimages[0]?.image} alt={product.productimages[0]?.name} width={30} height={30} /> : <Image src='/app/assets/images/200.svg' alt='Placeholder' width={30} height={30} />}
 												&nbsp;&nbsp;
-												<b>Brand:&nbsp;</b>
+												{/* <b>Brand:&nbsp;</b>
 												{product.productbrand.name},&nbsp;
-												<b>Name:&nbsp;</b>
+												<b>Name:&nbsp;</b> */}
 												{product.name}
 											</ListGroup.Item>
 											{/* <ListGroup.Item>{product.name}</ListGroup.Item> */}
@@ -232,16 +261,24 @@ export default function HeaderNavigation({ openCart }) {
 					<></>
 				)}
 
-				{selectedCategory === null ? (
+				{selectedMenu === null ? (
 					<></>
 				) : (
-					<div className='dropdown_mega_nav' onMouseLeave={() => setSelectedCategory(null)}>
+					<div className='dropdown_mega_nav' onMouseLeave={() => handleSelectMenu(null)}>
 						<div className='container-fluid'>
 							<div className='item_wrapper'>
 								<div className='item'>
-									<h4 className=''>{selectedCategory?.category_name}</h4>
+									<h4 className=''>{selectedMenu?.name}</h4>
 									<ul>
-										<li className='category_name' onClick={() => setGender(null)}>
+										<li className='category_name' onClick={() => handleSelectedMenuAllProduct(selectedMenu.productcategories)}>
+											All
+										</li>
+										{selectedMenu.productcategories.map(pcat =>
+											<li key={pcat.id} className='category_name' onClick={() => handleSelectCategory(pcat)}>
+												<Link href={"/shop?category=" + pcat.id}>{pcat.category_name}</Link>
+											</li>
+										)}
+										{/* <li className='category_name' onClick={() => setGender(null)}>
 											<Link href={"/shop?category=" + selectedCategory?.id}>All</Link>
 										</li>
 										<li>
@@ -253,16 +290,24 @@ export default function HeaderNavigation({ openCart }) {
 											<a className='category_name' onClick={() => setGender(1)}>
 												Women&apos;s Collection
 											</a>
-										</li>
+										</li> */}
 									</ul>
 								</div>
-								{selectedCategory?.products.map((product, i) => {
-									return (
-										<div key={i} className='item'>
-											{gender !== null ? product?.productdetail.gender === gender ? <Product product={product} /> : <></> : <Product product={product} />}
-										</div>
-									);
-								})}
+								{selectedCategory ?
+									selectedCategory?.products.map((product, i) => {
+										return (
+											<div key={i} className='item'>
+												{gender !== null ? product?.productdetail.gender === gender ? <Product product={product} /> : <></> : <Product product={product} />}
+											</div>
+										);
+									}) : selectedCategoryWiseAllProduct.map((product, i) => {
+										return (
+											<div key={i} className='item'>
+												{gender !== null ? product?.productdetail.gender === gender ? <Product product={product} /> : <></> : <Product product={product} />}
+											</div>
+										);
+									})
+								}
 							</div>
 						</div>
 					</div>

@@ -939,9 +939,10 @@ a {
 
 .result-card {
   position: fixed !important;
-  top: 68px;
-  width: 70vw;
-  left: 15vw;
+  top: 55px;
+  width: auto;
+  min-width: 250px;
+  right: 120px;
   z-index: 9999;
   border: 0;
   border-radius: 0;
@@ -960,6 +961,7 @@ a {
 .result-item:hover {
   background-color: #8abc41;
   color: #ffffff;
+  cursor: pointer;
 }
 
 /* CSS (Sheikh Rahinuzzaman) End */
