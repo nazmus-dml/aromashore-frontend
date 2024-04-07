@@ -14,7 +14,7 @@ export default function Document() {
         <link rel='stylesheet' href='/app/assets/css/bootstrap-drawer.min.css' />
         <link rel='stylesheet' href='/app/assets/css/style.css' />
         <link rel='stylesheet' href='/app/assets/auth/style.css' />
-        <script src='/app/assets/js/bootstrap.bundle.min.js'></script>
+        <script async src='/app/assets/js/bootstrap.bundle.min.js'></script>
       </Head>
       <body>
         <Main />

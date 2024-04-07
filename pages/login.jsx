@@ -94,7 +94,7 @@ function Login() {
 												</div>
 												<div className='col-12 mt-2'>
 													<Link href='/signup' className="text-primary">
-														Don't Have Account! Create Now.
+														Do not Have Account! Create Now.
 													</Link>
 												</div>
 											</div>

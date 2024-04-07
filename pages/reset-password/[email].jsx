@@ -48,7 +48,7 @@ function ResetPassword() {
 										<div className='mt-2'>
 											<p className='login-em'>Reset Password</p>
 											<p className="alert alert-warning mt-3 mb-2 text-center">
-												Password reset token has been sent to your registered email address<br /><i><b>"{query.email}"</b></i><br />Please check email and enter the given token here accordingly.
+												Password reset token has been sent to your registered email address<br /><i><b>&quot;{query.email}&quot;</b></i><br />Please check email and enter the given token here accordingly.
 											</p>
 										</div>
 										<form className='mt-4' onSubmit={handleSubmit}>
