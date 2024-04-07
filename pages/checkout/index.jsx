@@ -1,16 +1,21 @@
 import React, { useContext, useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import Select from "react-select";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Layout from "../../layouts/Layout";
 import { AppStore } from "../../store/AppStore";
-import { calculateCart } from "../../services/utilityService";
+import { calculateCart, getFormatedDate, getFormatedTime } from "../../services/utilityService";
 import { validate, validateProperty } from "../../models/shippingAddress";
-import Select from "react-select";
-import Link from "next/link";
 import { getCitiesByStateId, getCountriesList, getStatesByCountryId } from "../../services/publicContentsService";
-import { getprofileByCustomer } from "../../services/webCustomerService";
+import { placeOrder, getprofileByCustomer } from "../../services/webCustomerService";
 
 export default function Index({ user, customerData }) {
   // Cookies.set("Card_visited", true);
-  const { cart } = useContext(AppStore);
+  const router = useRouter();
+  const { cart, clearCart } = useContext(AppStore);
+  console.log(cart);
   let { totalAmount } = calculateCart(cart);
   const [shippingAddress, setShippingAddress] = useState(null);
   const [errors, setErrors] = useState({});
@@ -32,7 +37,6 @@ export default function Index({ user, customerData }) {
   });
 
   useEffect(() => {
-    console.log(cart);
     console.log('chechout ---->', customerData);
     getCountriesList()
       .then(function (response) {
@@ -64,16 +68,15 @@ export default function Index({ user, customerData }) {
     }
 
     setShippingAddress({
-      order_date: new Date(),
-      order_time: new Date(),
+      order_date: getFormatedDate(new Date()),
+      order_time: getFormatedTime(new Date()),
       amount: 0,
       is_paid: 0,
       customer_id: customerData.id,
       customer_type: customerData.customercategory.title,
       customer_type_id: customerData.customercategory.id,
       customer_no: customerData.customer_no,
-      firstname: customerData.firstname,
-      lastname: customerData.lastname,
+      customer_name: customerData.firstname + customerData.lastname,
       customer_contact: customerData.contact,
       customer_email: customerData.email,
       customer_company: customerData.company,
@@ -84,9 +87,9 @@ export default function Index({ user, customerData }) {
       address_line_two: customerData.customercontact.address_line_two,
       city: customerData.customercontact.city,
       city_name: customerData.customercontact.city_name,
-      tax_rate: customerData.customercontact.city_name,
-      state: customerData.customercontact.tax_rate,
-      state_code: customerData.state_code,
+      tax_rate: customerData.customercontact.tax_rate,
+      state: customerData.customercontact.state,
+      state_code: customerData.customercontact.state_code,
       state_name: customerData.customercontact.state_name,
       zipcode: customerData.customercontact.zipcode,
       country: customerData.customercontact.country,
@@ -219,265 +222,319 @@ export default function Index({ user, customerData }) {
     shippingAddressCopy[name] = value;
     setShippingAddress(shippingAddressCopy);
   };
-  const handleSubmit = (e) => {
-    console.log("asdf", shippingAddress);
-    e.preventDefault();
-    const errorsCopy = validate(shippingAddress);
-    setErrors(errorsCopy);
-    if (errorsCopy) return;
+
+  const handleSubmit = async (e) => {
+    if (cart.length > 0) {
+      e.preventDefault();
+      // console.log("cart", cart);
+      // console.log("shipping", shippingAddress);
+      let totalWeight = 0;
+      const cartProducts = [];
+      cart.forEach(cartItem => {
+        const cartData = {
+          "variation_id": cartItem.units.id,
+          "price": cartItem.units.price,
+          "size": cartItem.units.size,
+          "size_unit": cartItem.units.size_unit,
+          "quantity": cartItem.units.qty,
+          "weight": cartItem.units.weight,
+          "category_id": cartItem.productcategory.id,
+          "product_id": cartItem.id,
+          "product_no": cartItem.product_no,
+          "product_name": cartItem.name
+        };
+        totalWeight += cartItem.units.qty * Number(cartItem.units.weight);
+        // console.log(cartItem.units.qty)
+        cartProducts.push(cartData);
+      });
+      let shippingAddressCopy = { ...shippingAddress };
+      shippingAddressCopy.products = JSON.stringify(cartProducts);
+      shippingAddressCopy.amount = totalAmount;
+      shippingAddressCopy.total_weight = totalWeight;
+      // setShippingAddress(shippingAddressCopy);
+
+      // console.log("all info", shippingAddressCopy);
+
+      const errorsCopy = validate({
+        customer_id: shippingAddressCopy.customer_id,
+        customer_name: shippingAddressCopy.customer_name,
+        address_line_one: shippingAddressCopy.address_line_one,
+        city_name: shippingAddressCopy.city_name,
+        state_name: shippingAddressCopy.state_name,
+        zipcode: shippingAddressCopy.zipcode,
+        country_name: shippingAddressCopy.country_name,
+      });
+      // console.log(errorsCopy)
+      setErrors(errorsCopy);
+      if (errorsCopy) return;
+
+      // console.log("all info validated", shippingAddressCopy);
+
+      try {
+        let data = await placeOrder(shippingAddressCopy);
+        toast(data.appMessage);
+        if (data.appStatus == false) return;
+        clearCart();
+        router.push('/');
+      } catch (error) {
+        console.log(error)
+      }
+
+    }
   };
+
   return (
-    <Layout>
-      <div className="breadcrumb">
-        <div className="container mt-3">
-          <h2>Checkout</h2>
-          <ul className="p-0">
-            <li>
-              <Link href="/">Home</Link>
-            </li>
-            <li>
-              <Link href="/shop">Shop</Link>
-            </li>
-            <li className="active">Checkout</li>
-          </ul>
+    <>
+      <ToastContainer />
+      <Layout>
+        <div className="breadcrumb">
+          <div className="container mt-3">
+            <h2>Checkout</h2>
+            <ul className="p-0">
+              <li>
+                <Link href="/">Home</Link>
+              </li>
+              <li>
+                <Link href="/shop">Shop</Link>
+              </li>
+              <li className="active">Checkout</li>
+            </ul>
+          </div>
         </div>
-      </div>
-      <div className="shop">
-        <div className="container">
-          <div className="checkout">
-            <div className="container">
-              <div className="row">
-                <div className="col-12 col-lg-7">
-                  <form>
-                    <div className="checkout__form">
-                      <div className="checkout__form__shipping">
-                        <div className="card">
-                          <div className="card-header">Shipping Address</div>
-                          <div className="card-body">
-                            {shippingAddress === null ? <></> :
-                              <>
-                                <div className="row">
-                                  <div className="col-12 col-md-6 mb-2">
-                                    <div className="form-group">
-                                      <label htmlFor="firstname">
-                                        {" "}
-                                        First Name&nbsp;<span className="text-danger">*</span>
-                                      </label>
-                                      <input
-                                        id="firstname"
-                                        name="firstname"
-                                        placeholder="First name"
-                                        value={shippingAddress.firstname}
-                                        onChange={handleChange}
-                                        className="form-control"
-                                      />
-                                      {errors && errors.firstname && (
-                                        <div style={{ color: "red" }}>
-                                          {errors.firstname}
-                                        </div>
-                                      )}
+        <div className="shop">
+          <div className="container">
+            <div className="checkout">
+              <div className="container">
+                <div className="row">
+                  <div className="col-12 col-lg-7">
+                    <form>
+                      <div className="checkout__form">
+                        <div className="checkout__form__shipping">
+                          <div className="card">
+                            <div className="card-header">Shipping Address</div>
+                            <div className="card-body">
+                              {shippingAddress === null ? <></> :
+                                <>
+                                  <div className="row">
+                                    <div className="col-12 col-md-6 mb-2">
+                                      <div className="form-group">
+                                        <label htmlFor="firstname">
+                                          {" "}
+                                          First Name&nbsp;<span className="text-danger">*</span>
+                                        </label>
+                                        <input
+                                          id="firstname"
+                                          name="firstname"
+                                          placeholder="First name"
+                                          value={shippingAddress.firstname}
+                                          onChange={handleChange}
+                                          className="form-control"
+                                        />
+                                        {errors && errors.firstname && (
+                                          <div style={{ color: "red" }}>
+                                            {errors.firstname}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="col-12 col-md-6 mb-2">
+                                      <div className="form-group">
+                                        <label>
+                                          Last Name&nbsp;<span className="text-danger">*</span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="lastname"
+                                          placeholder="Last name"
+                                          value={shippingAddress.lastname}
+                                          onChange={handleChange}
+                                          className="form-control"
+                                        />
+                                        {errors && errors.lastname && (
+                                          <div style={{ color: "red" }}>
+                                            {errors.lastname}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="col-12 col-md-12 mb-2">
+                                      <div className="form-group">
+                                        <label>
+                                          Address Line One&nbsp;<span className="text-danger">*</span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="address"
+                                          placeholder="Steet address"
+                                          value={shippingAddress.address_line_one}
+                                          onChange={handleChange}
+                                          className="form-control"
+                                        />
+                                        {errors && errors.address && (
+                                          <div style={{ color: "red" }}>
+                                            {errors.address}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="col-12 col-md-12 mb-2">
+                                      <div className="form-group">
+                                        <label>
+                                          Address Line Two&nbsp;<span className="text-danger">*</span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="address"
+                                          placeholder="Steet address"
+                                          value={shippingAddress.address_line_two}
+                                          onChange={handleChange}
+                                          className="form-control"
+                                        />
+                                        {errors && errors.address && (
+                                          <div style={{ color: "red" }}>
+                                            {errors.address}
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="col-12 col-md-6 mb-2">
-                                    <div className="form-group">
-                                      <label>
-                                        Last Name&nbsp;<span className="text-danger">*</span>
-                                      </label>
-                                      <input
-                                        type="text"
-                                        name="lastname"
-                                        placeholder="Last name"
-                                        value={shippingAddress.lastname}
-                                        onChange={handleChange}
-                                        className="form-control"
-                                      />
-                                      {errors && errors.lastname && (
-                                        <div style={{ color: "red" }}>
-                                          {errors.lastname}
-                                        </div>
-                                      )}
+                                  <div className="row">
+                                    <div className="col-12 col-md-6 mb-2">
+                                      <div className='mb-3'>
+                                        <label className='d-block'>Country</label>
+                                        <Select options={profileCountryList} value={selectedProfileCountry} onChange={(event) => handleProfileCountryInputChange(event)} required />
+                                      </div>
+                                    </div>
+                                    <div className="col-12 col-md-6 mb-2">
+                                      <div className='mb-3'>
+                                        <label className='d-block'>State/Division</label>
+                                        {shippingAddress.country !== "" && profileStateList.length > 0 ? (
+                                          <Select options={profileStateList} value={selectedProfileState} onChange={(event) => handleProfileStateInputChange(event)} required />
+                                        ) : (
+                                          <input className='form-control' type='text' name='state_name' value={shippingAddress.state_name} onChange={handleChange} />
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="col-12 col-md-6 mb-2">
+                                      <div className='mb-3'>
+                                        <label className='d-block'>City</label>
+                                        {shippingAddress.state !== "" && profileCityList.length > 0 ? (
+                                          <Select options={profileCityList} value={selectedProfileCity} onChange={(event) => handleProfileCityInputChange(event)} required />
+                                        ) : (
+                                          <input className='form-control' type='text' name='city_name' value={shippingAddress.city_name} onChange={handleChange} />
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="col-12 col-md-6 mb-2">
+                                      <div className="form-group">
+                                        <label>
+                                          Postcode/ZIP&nbsp;<span className="text-danger">*</span>
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="zipcode"
+                                          placeholder="Postcode/ZIP"
+                                          value={shippingAddress.zipcode}
+                                          onChange={handleChange}
+                                          className="form-control"
+                                        />
+                                        {errors && errors.zipcode && (
+                                          <div style={{ color: "red" }}>
+                                            {errors.zipcode}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="col-12 col-md-12 mb-2">
+                                      <div className="form-group">
+                                        <label>Order note</label>
+                                        <input
+                                          type="text"
+                                          name="order_note"
+                                          placeholder="Note about your order, e.g, special noe for delivery"
+                                          value={shippingAddress.order_note}
+                                          onChange={handleChange}
+                                          className="form-control"
+                                        />
+                                        {errors && errors.order_note && (
+                                          <div style={{ color: "red" }}>
+                                            {errors.order_note}
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
-                                  <div className="col-12 col-md-12 mb-2">
-                                    <div className="form-group">
-                                      <label>
-                                        Address Line One&nbsp;<span className="text-danger">*</span>
-                                      </label>
-                                      <input
-                                        type="text"
-                                        name="address"
-                                        placeholder="Steet address"
-                                        value={shippingAddress.address_line_one}
-                                        onChange={handleChange}
-                                        className="form-control"
-                                      />
-                                      {errors && errors.address && (
-                                        <div style={{ color: "red" }}>
-                                          {errors.address}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="col-12 col-md-12 mb-2">
-                                    <div className="form-group">
-                                      <label>
-                                        Address Line Two&nbsp;<span className="text-danger">*</span>
-                                      </label>
-                                      <input
-                                        type="text"
-                                        name="address"
-                                        placeholder="Steet address"
-                                        value={shippingAddress.address_line_two}
-                                        onChange={handleChange}
-                                        className="form-control"
-                                      />
-                                      {errors && errors.address && (
-                                        <div style={{ color: "red" }}>
-                                          {errors.address}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="row">
-                                  <div className="col-12 col-md-6 mb-2">
-                                    <div className='mb-3'>
-                                      <label className='d-block'>Country</label>
-                                      <Select options={profileCountryList} value={selectedProfileCountry} onChange={(event) => handleProfileCountryInputChange(event)} required />
-                                    </div>
-                                  </div>
-                                  <div className="col-12 col-md-6 mb-2">
-                                    <div className='mb-3'>
-                                      <label className='d-block'>State/Division</label>
-                                      {shippingAddress.country !== "" && profileStateList.length > 0 ? (
-                                        <Select options={profileStateList} value={selectedProfileState} onChange={(event) => handleProfileStateInputChange(event)} required />
-                                      ) : (
-                                        <input className='form-control' type='text' name='state_name' value={shippingAddress.state_name} onChange={handleChange} />
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="col-12 col-md-6 mb-2">
-                                    <div className='mb-3'>
-                                      <label className='d-block'>City</label>
-                                      {shippingAddress.state !== "" && profileCityList.length > 0 ? (
-                                        <Select options={profileCityList} value={selectedProfileCity} onChange={(event) => handleProfileCityInputChange(event)} required />
-                                      ) : (
-                                        <input className='form-control' type='text' name='city_name' value={shippingAddress.city_name} onChange={handleChange} />
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="col-12 col-md-6 mb-2">
-                                    <div className="form-group">
-                                      <label>
-                                        Postcode/ZIP&nbsp;<span className="text-danger">*</span>
-                                      </label>
-                                      <input
-                                        type="text"
-                                        name="zipcode"
-                                        placeholder="Postcode/ZIP"
-                                        value={shippingAddress.zipcode}
-                                        onChange={handleChange}
-                                        className="form-control"
-                                      />
-                                      {errors && errors.zipcode && (
-                                        <div style={{ color: "red" }}>
-                                          {errors.zipcode}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="col-12 col-md-12 mb-2">
-                                    <div className="form-group">
-                                      <label>Order note</label>
-                                      <input
-                                        type="text"
-                                        name="order_note"
-                                        placeholder="Note about your order, e.g, special noe for delivery"
-                                        value={shippingAddress.order_note}
-                                        onChange={handleChange}
-                                        className="form-control"
-                                      />
-                                      {errors && errors.order_note && (
-                                        <div style={{ color: "red" }}>
-                                          {errors.order_note}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              </>
-                            }
+                                </>
+                              }
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </form>
-                </div>
-                <div className="col-12 col-lg-5">
-                  <div className="row">
-                    <div className="col-12 col-md-6 col-lg-12 ml-auto">
-                      <div className="checkout__total">
-                        <h5 className="checkout-title">Your order</h5>
-                        <div className="checkout__total__price">
-                          {/* <h5>Product</h5> */}
-                          <table>
-                            <thead>
-                              <tr>
-                                <th>Product</th>
-                                <th className="text-center">Unit Price</th>
-                                <th className="text-center">Total Price</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {cart.map((product, i) => {
-                                return product.units.map((unit, j) => {
-                                  return (
-                                    <tr key={(j + 1) * (j + 1)}>
-                                      <td>
-                                        <span>{unit.qty} x </span>
-                                        {unit.quantity}-{unit.unit_name}{" "}
-                                        {product.name}
-                                      </td>
-                                      <td className="text-center">
-                                        {unit.sale_price > 0
-                                          ? unit.sale_price
-                                          : unit.price}
-                                      </td>
-                                      <td className="text-center">
-                                        {unit.sale_price > 0
-                                          ? unit.sale_price * unit.qty
-                                          : unit.price * unit.qty}
-                                      </td>
-                                    </tr>
-                                  );
-                                });
-                              })}
-                            </tbody>
-                          </table>
-                          <div className="checkout__total__price__total-count">
+                    </form>
+                  </div>
+                  <div className="col-12 col-lg-5">
+                    <div className="row">
+                      <div className="col-12 col-md-6 col-lg-12 ml-auto">
+                        <div className="checkout__total">
+                          <h5 className="checkout-title">Your order</h5>
+                          <div className="checkout__total__price">
+                            {/* <h5>Product</h5> */}
                             <table>
-                              <tbody>
+                              <thead>
                                 <tr>
-                                  <td>Total</td>
-                                  <td className="text-end">
-                                    $&nbsp;{totalAmount}
-                                  </td>
+                                  <th>Product</th>
+                                  <th className="text-right">Unit Price</th>
+                                  <th className="text-right">Total Price</th>
                                 </tr>
+                              </thead>
+                              <tbody>
+                                {cart.map((product, i) =>
+                                  <tr key={i}>
+                                    <td>
+                                      <span>{product.units.qty}&nbsp;x&nbsp;</span>
+                                      {product.name} ({product.units.size}-{product.units.size_unit})
+                                    </td>
+                                    <td className="text-right">
+                                      $&nbsp;{product.units.sale_price > 0
+                                        ? product.units.sale_price
+                                        : product.units.price}
+                                    </td>
+                                    <td className="text-right">
+                                      $&nbsp;{product.units.sale_price > 0
+                                        ? product.units.sale_price * product.units.qty
+                                        : product.units.price * product.units.qty}
+                                    </td>
+                                  </tr>
+                                )}
                               </tbody>
                             </table>
+                            <div className="checkout__total__price__total-count">
+                              <table>
+                                <tbody>
+                                  <tr>
+                                    <td>Total</td>
+                                    <td className="text-end">
+                                      $&nbsp;{totalAmount}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
+                          {cart.length > 0 ?
+                            <button onClick={(evt) => handleSubmit(evt)} className="btn -red">Place Order</button> : <></>
+                          }
                         </div>
-                        <button onClick={handleSubmit} className="btn -red">Place Order</button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          </div >
         </div >
-      </div >
-    </Layout >
+      </Layout >
+    </>
   );
 }
 

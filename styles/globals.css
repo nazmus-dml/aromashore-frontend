@@ -1320,6 +1320,11 @@ button:hover .cart__quantity {
   padding-left: 2px;
 }
 
+.MuiTablePagination-selectLabel,
+.MuiTablePagination-displayedRows {
+  margin-bottom: 0 !important;
+}
+
 /* new code added by syeda */
 .footer-bg {
   /* background-image: url(../public/app/assets/images/ft3.jpg); */

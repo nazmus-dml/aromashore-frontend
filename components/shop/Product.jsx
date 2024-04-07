@@ -53,7 +53,7 @@ export default function Product({ product, viewType = true, shopPage = false }) 
 										<span className='product-thumb__image'>{productimages[0] ? <Image src={productimages[0]?.image} alt={productimages[0]?.name} width={250} height={250} /> : <Image src='/app/assets/images/200.svg' alt='Placeholder' width={250} height={250} />}</span>
 									</Link>
 									<div className='product-thumb__actions'>
-										<div className='product-btn'>
+										{/* <div className='product-btn'>
 											<a
 												onClick={() => {
 													add_TO_CART({
@@ -68,7 +68,7 @@ export default function Product({ product, viewType = true, shopPage = false }) 
 												href='#'>
 												<i className='fas fa-shopping-bag'></i>
 											</a>
-										</div>
+										</div> */}
 										<div className='product-btn eye-icon'>
 											<Link href={"/products/" + id}>
 												<span className='btn -white product__actions__item -round product-qv'>
@@ -130,7 +130,7 @@ export default function Product({ product, viewType = true, shopPage = false }) 
 										<span className='product-name'>{name}</span>
 									</Link>
 									<div>
-										<div className='product-btn'>
+										{/* <div className='product-btn'>
 											<a
 												onClick={() => {
 													add_TO_CART({
@@ -145,7 +145,7 @@ export default function Product({ product, viewType = true, shopPage = false }) 
 												href='#'>
 												<i className='fas fa-shopping-bag'></i>
 											</a>
-										</div>
+										</div> */}
 										<div className='product-btn eye-icon'>
 											<Link href={"/products/" + id}>
 												<span className='btn -white product__actions__item -round product-qv'>

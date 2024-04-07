@@ -78,6 +78,7 @@ export default function HeaderNavigation({ openCart }) {
 
 	const handleSelectedMenuAllProduct = (allCategoryProduct) => {
 		console.log(allCategoryProduct);
+		setSelectedCategory(null);
 		const allProductFromSelectedMenu = [];
 		if (allCategoryProduct !== null && allCategoryProduct.length > 0) {
 			allCategoryProduct.map(acp => {
@@ -275,7 +276,8 @@ export default function HeaderNavigation({ openCart }) {
 										</li>
 										{selectedMenu.productcategories.map(pcat =>
 											<li key={pcat.id} className='category_name' onClick={() => handleSelectCategory(pcat)}>
-												<Link href={"/shop?category=" + pcat.id}>{pcat.category_name}</Link>
+												{pcat.category_name}
+												{/* <Link href={"/shop?category=" + pcat.id}>{pcat.category_name}</Link> */}
 											</li>
 										)}
 										{/* <li className='category_name' onClick={() => setGender(null)}>

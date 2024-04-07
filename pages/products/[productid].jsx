@@ -443,13 +443,13 @@ function ProductDetail() {
 										<div className="col-12 col-sm-12">
 											<div className='product-detail__content__tab'>
 												<ul className='tab-content__header'>
-													<li onClick={() => setTabType(1)} className='tab-switcher'>
+													<li onClick={() => setTabType(1)} className={tabType == 1 ? 'active tab-switcher' : 'tab-switcher'}>
 														Description
 													</li>
-													<li onClick={() => setTabType(2)} className='tab-switcher'>
+													<li onClick={() => setTabType(2)} className={tabType == 2 ? 'active tab-switcher' : 'tab-switcher'}>
 														Shipping & Returns
 													</li>
-													<li ref={ref} onClick={() => setTabType(3)} className='tab-switcher'>
+													<li ref={ref} onClick={() => setTabType(3)} className={tabType == 3 ? 'active tab-switcher' : 'tab-switcher'}>
 														Reviews ({totalReviewers})
 													</li>
 												</ul>

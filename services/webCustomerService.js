@@ -56,3 +56,12 @@ export function getOrderHistoryByCustomerId(customerId) {
     headerWithUserAuthToken()
   );
 }
+
+export function placeOrder(payload) {
+  console.log(payload)
+  return http.post(
+    apiUrl + `/web/customer/order/add`,
+    payload,
+    headerWithUserAuthToken()
+  );
+}

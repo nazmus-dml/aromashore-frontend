@@ -31,22 +31,6 @@ function MyApp({
 
   const add_TO_CART = ({ productDetails, unit }) => {
     console.log('_app add_TO_CART ----> ', productDetails, unit);
-
-    const cartData = {
-      "variation_id": unit.id,
-      "price": unit.price,
-      "size": unit.size,
-      "size_unit": unit.size_unit,
-      "quantity": unit.qty,
-      "weight": "317.47",
-      "category_id": productDetails.productcategoryId,
-      "product_id": productDetails.id,
-      "product_no": productDetails.product_no,
-      "product_name": productDetails.name
-    };
-
-    console.log('cartData --------->>', cartData);
-
     // console.log('old cart',cart);
     if (productDetails.productproperties.length > 0) {
       let copyCart = [...cart];
@@ -56,115 +40,49 @@ function MyApp({
         const foundIndex = copyCart.findIndex(
           (item) => findCartItem.id == item.id
         );
-        let findUnit = findCartItem.units.find((item) => unit.id == item.id);
-        if (findUnit) {
-          let findUnitIndex = findCartItem.units.findIndex(
-            (item) => unit.id == item.id
-          );
-          findCartItem.units[findUnitIndex] = {
-            ...findUnit,
-            qty: findUnit.qty + unit.qty,
-          };
+        if (findCartItem.units.id == unit.id) {
+          findCartItem.units.qty += unit.qty;
           copyCart[foundIndex] = {
             ...findCartItem,
           };
         } else {
           copyCart[foundIndex] = {
             ...findCartItem,
-            units: [...findCartItem.units, unit],
+            units: unit,
           };
         }
       } else {
-        copyCart = [...copyCart, { ...productDetails, units: [unit] }];
+        copyCart = [...copyCart, { ...productDetails, units: unit }];
       }
       console.log(copyCart);
       saveCartToLocalStorage(copyCart);
     }
   };
 
-  const delete_ITEM_FROM_CART = ({ productDetails, unit }) => {
+  const delete_ITEM_FROM_CART = ({ product }) => {
+    console.log(product)
     let copyCart = [...cart];
-    const findCartItem = copyCart.find((item) => productDetails.id == item.id);
+    const filteredCart = copyCart.filter(
+      (item) => item.id !== product.id && item.units.id != product.units.id
+    );
+    copyCart = [...filteredCart];
+    saveCartToLocalStorage(copyCart);
+  };
+
+  const increment_TO_CART_ITEM = ({ product }) => {
+    let copyCart = [...cart];
+    const findCartItem = copyCart.find((item) => product.id == item.id);
     if (findCartItem) {
-      const foundIndex = copyCart.findIndex(
-        (item) => findCartItem.id == item.id
-      );
-      let findUnit = findCartItem.units.find((item) => unit.id == item.id);
-      if (findUnit) {
-        if (findCartItem.units.length > 1) {
-          const filteredUnits = findCartItem.units.filter(
-            (item) => unit.id !== item.id
-          );
-          findCartItem.units = filteredUnits;
-          copyCart[foundIndex] = {
-            ...findCartItem,
-          };
-        } else {
-          const filteredCart = copyCart.filter(
-            (item) => item.id !== productDetails.id
-          );
-          copyCart = [...filteredCart];
-          localStorage.removeItem("cart");
-        }
-      } else {
-        console.log("Else Unit");
-      }
+      findCartItem.units.qty += 1;
     }
     saveCartToLocalStorage(copyCart);
   };
 
-  const increment_TO_CART_ITEM = ({ productDetails, unit }) => {
+  const decrement_TO_CART_ITEM = ({ product }) => {
     let copyCart = [...cart];
-    const findCartItem = copyCart.find((item) => productDetails.id == item.id);
-    if (findCartItem) {
-      const foundIndex = copyCart.findIndex(
-        (item) => findCartItem.id == item.id
-      );
-      const findUnit = findCartItem.units.find((item) => unit.id == item.id);
-      if (findUnit) {
-        let findUnitIndex = findCartItem.units.findIndex(
-          (item) => unit.id == item.id
-        );
-        findCartItem.units[findUnitIndex] = {
-          ...findUnit,
-          qty: unit.qty,
-        };
-        copyCart[foundIndex] = {
-          ...findCartItem,
-        };
-      } else {
-        copyCart[foundIndex] = {
-          ...findCartItem,
-        };
-      }
-    }
-    saveCartToLocalStorage(copyCart);
-  };
-
-  const decrement_TO_CART_ITEM = ({ productDetails, unit }) => {
-    let copyCart = [...cart];
-    const findCartItem = copyCart.find((item) => productDetails.id == item.id);
-    if (findCartItem) {
-      const foundIndex = copyCart.findIndex(
-        (item) => findCartItem.id == item.id
-      );
-      const findUnit = findCartItem.units.find((item) => unit.id == item.id);
-      if (findUnit) {
-        const findUnitIndex = findCartItem.units.findIndex(
-          (item) => unit.id == item.id
-        );
-        findCartItem.units[findUnitIndex] = {
-          ...findUnit,
-          qty: unit.qty,
-        };
-        copyCart[foundIndex] = {
-          ...findCartItem,
-        };
-      } else {
-        copyCart[foundIndex] = {
-          ...findCartItem,
-        };
-      }
+    const findCartItem = copyCart.find((item) => product.id == item.id);
+    if (findCartItem && findCartItem.units.qty > 1) {
+      findCartItem.units.qty -= 1;
     }
     saveCartToLocalStorage(copyCart);
   };

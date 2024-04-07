@@ -1,20 +1,23 @@
 import Joi from "joi-browser";
+
 const model = {
-  userId: Joi.string().required().label("User"),
-  firstName: Joi.string().required().label("First Name"),
-  lastName: Joi.string().required().label("Last Name"),
-  country: Joi.string().required().label("Country"),
-  address: Joi.string().required().label("Address"),
-  town_city: Joi.string().required().label("Town/City"),
-  country_state: Joi.string().required().label("Country/State"),
-  postcode_zip: Joi.string().required().label("Postcode/ZIP"),
-  order_note: Joi.string().empty("").label("Order note"),
-  coupon_code: Joi.string().empty("").label("Coupon code"),
-  paymentMethod: Joi.string().empty("").label("Payment Method"),
-  isSaveinfo: Joi.boolean().label("Save info"),
+  customer_id: Joi.number().required().label("Customer Id"),
+  customer_name: Joi.string().required().label("Customer Name"),
+  // lastName: Joi.string().required().label("Last Name"),
+  country_name: Joi.string().required().label("Country"),
+  address_line_one: Joi.string().required().label("Address"),
+  city_name: Joi.string().required().label("Town/City"),
+  state_name: Joi.string().required().label("Country/State"),
+  zipcode: Joi.string().required().label("Postcode/ZIP"),
+  // order_note: Joi.string().empty("").label("Order note"),
+  // coupon_code: Joi.string().empty("").label("Coupon code"),
+  // paymentMethod: Joi.string().empty("").label("Payment Method"),
+  // isSaveinfo: Joi.boolean().label("Save info"),
 };
 export var validate = (data) => {
+  console.log(data)
   let schema = Joi.object(model);
+  console.log(schema)
   let options = { abortEarly: false };
   let result = schema.validate(data, options);
   if (!result.error) return null;

@@ -12,6 +12,7 @@ import Image from "next/image";
 function Cart() {
 	const router = useRouter();
 	const { cart, increment_TO_CART_ITEM, decrement_TO_CART_ITEM, delete_ITEM_FROM_CART, clearCart } = useContext(AppStore);
+	console.log(cart)
 	let { totalAmount } = calculateCart(cart);
 
 	return (
@@ -54,81 +55,66 @@ function Cart() {
 										cart.map((product, i) => (
 											<tbody key={i}>
 												<tr>
-													<td rowSpan={product.units.length + 1} className='text-center'>
+													<td className='text-center'>
 														{product.productimages[0] ? <Image src={product.productimages[0]?.image} alt={product.productimages[0]?.name} height={75} width={75} /> : <Image src='/app/assets/images/200.svg' alt='Placeholder' height={75} width={75} />}
 													</td>
-													<td rowSpan={product.units.length + 1}>
+													<td>
 														<div className='p-2'>
 															<Link style={{ textWrap: "wrap" }} href={"/products/" + product.id}>
 																{product.name}
 															</Link>
 														</div>
 													</td>
-												</tr>
-
-												{product.units.map((unit, i) => (
-													<tr key={i}>
-														<td className='text-center'>
-															{unit.size} {unit.size_unit}
-														</td>
-														{unit.sale_price > 0 ? <td className='text-center'>$&nbsp;{unit.sale_price}</td> : <td className='text-center'>$&nbsp;{unit.price}</td>}
-														<td className='text-center'>
-															<div className='quantity-controlle1'>
+													{/* </tr> */}
+													{/* {product.units.map((unit, i) => ( */}
+													{/* <tr> */}
+													<td className='text-center'>
+														{product.units.size} {product.units.size_unit}
+													</td>
+													{product.units.sale_price > 0 ? <td className='text-center'>$&nbsp;{product.units.sale_price}</td> : <td className='text-center'>$&nbsp;{product.units.price}</td>}
+													<td className='text-center'>
+														<div className='quantity-controlle1'>
+															<div
+																style={{
+																	display: "flex",
+																	alignItems: "center",
+																	justifyContent: "center",
+																	marginBottom: "5px"
+																}}>
 																<div
-																	style={{
-																		display: "flex",
-																		alignItems: "center",
-																		justifyContent: "center",
-																		marginBottom: "5px"
-																	}}>
-																	<div
-																		onClick={() => {
-																			if (unit.qty > 1) {
-																				decrement_TO_CART_ITEM({
-																					product,
-																					unit: {
-																						...unit,
-																						qty: unit.qty - 1
-																					}
-																				});
-																			}
-																		}}
-																		className='btn btn-sm btn-outline-secondary rounded'>
-																		<i className='fas fa-minus'></i>
-																	</div>
-																	<div className='quantity-controller__number'>{unit.qty}</div>
-																	<div
-																		onClick={() => {
-																			increment_TO_CART_ITEM({
-																				product,
-																				unit: {
-																					...unit,
-																					qty: unit.qty + 1
-																				}
-																			});
-																		}}
-																		className='btn btn-sm btn-outline-secondary rounded'>
-																		<i className='fas fa-plus'></i>
-																	</div>
+																	onClick={() => {
+																		if (product.units.qty > 1) {
+																			decrement_TO_CART_ITEM({ product });
+																		}
+																	}}
+																	className='btn btn-sm btn-outline-secondary rounded'>
+																	<i className='fas fa-minus'></i>
+																</div>
+																<div className='quantity-controller__number'>{product.units.qty}</div>
+																<div
+																	onClick={() => {
+																		increment_TO_CART_ITEM({ product });
+																	}}
+																	className='btn btn-sm btn-outline-secondary rounded'>
+																	<i className='fas fa-plus'></i>
 																</div>
 															</div>
-														</td>
-														{unit.sale_price > 0 ? <td className='text-center'>$&nbsp;{unit.sale_price * unit.qty}</td> : <td className='text-center'>$&nbsp;{unit.price * unit.qty}</td>}
-														<td className='text-center' style={{ marginBottom: "5px" }}>
-															<button
-																className='btn btn-sm btn-outline-danger rounded-circle'
-																onClick={(e) => {
-																	e.preventDefault();
-																	delete_ITEM_FROM_CART({
-																		product,
-																		unit
-																	});
-																}}>
-																<i className='fas fa-times'></i>
-															</button>
-														</td>
-													</tr>
-												))}
+														</div>
+													</td>
+													{product.units.sale_price > 0 ? <td className='text-center'>$&nbsp;{product.units.sale_price * product.units.qty}</td> : <td className='text-center'>$&nbsp;{product.units.price * product.units.qty}</td>}
+													<td className='text-center' style={{ marginBottom: "5px" }}>
+														<button
+															className='btn btn-sm btn-outline-danger rounded-circle'
+															onClick={(e) => {
+																delete_ITEM_FROM_CART({
+																	product
+																});
+															}}>
+															<i className='fas fa-times'></i>
+														</button>
+													</td>
+												</tr>
+												{/* ))} */}
 											</tbody>
 										))
 									) : (
@@ -154,22 +140,24 @@ function Cart() {
 													</button>
 												</Link>
 											</td>
-											<td className='text-end'>
-												<button
-													onClick={(e) => {
-														e.preventDefault();
-														clearCart();
-													}}
-													className='btn btn-light'>
-													{totalAmount !== 0 ? (
-														<>
-															<i className='fas fa-trash me-2'></i>Clear Shopping Cart
-														</>
-													) : (
-														<></>
-													)}
-												</button>
-											</td>
+											{cart.length > 0 ?
+												<td className='text-end'>
+													<button
+														onClick={(e) => {
+															e.preventDefault();
+															clearCart();
+														}}
+														className='btn btn-light'>
+														{totalAmount !== 0 ? (
+															<>
+																<i className='fas fa-trash me-2'></i>Clear Shopping Cart
+															</>
+														) : (
+															<></>
+														)}
+													</button>
+												</td> : <></>
+											}
 										</tr>
 									</tbody>
 								</table>

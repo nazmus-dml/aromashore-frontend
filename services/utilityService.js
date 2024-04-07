@@ -11,13 +11,13 @@ export function calculateCart(cart = []) {
 
   const totalQty = cart.length;
 
-  let subAmount = (units) => {
-    return units.reduce((initVal, nextitem) => {
-      if (nextitem.sale_price > 0) {
-        return initVal + nextitem.sale_price * nextitem.qty;
+  let subAmount = (unit) => {
+    // return units.reduce((initVal, nextitem) => {
+      if (unit.sale_price > 0) {
+        return unit.sale_price * unit.qty;
+      }else{
+        return unit.price * unit.qty;
       }
-      return initVal + nextitem.price * nextitem.qty;
-    }, 0);
   };
 
   const totalAmount = cart.reduce((prev, current) => {
@@ -25,5 +25,31 @@ export function calculateCart(cart = []) {
   }, 0);
 
   return { totalQty, totalAmount };
-  
+
 }
+
+export function getFormatedDate(date) {
+  let formatedDate = null;
+  if (date !== '' && date !== null) {
+    const y = new Date(date).getFullYear();
+    const tM = Number(new Date(date).getMonth()) + 1;
+    const m = tM < 10 ? `0${tM}` : tM;
+    const tD = new Date(date).getDate();
+    const d = tD < 10 ? `0${tD}` : tD;
+    formatedDate = `${y}-${m}-${d}`;
+  }
+  return formatedDate;
+};
+
+export function getFormatedTime(date) {
+  let formatedTime = null;
+  if (date !== '' && date !== null) {
+    const tH = new Date(date).getHours();
+    const h = tH > 12 ? tH - 12 : (tH === 0 ? 12 : (tH < 10 ? `0${tH}` : tH));
+    const aMpM = tH > 12 ? 'PM' : 'AM';
+    const tM = new Date(date).getMinutes();
+    const m = tM < 10 ? `0${tM}` : tM;
+    formatedTime = `${h}:${m} ${aMpM}`;
+  }
+  return formatedTime;
+};

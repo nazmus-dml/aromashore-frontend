@@ -5,6 +5,40 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Product from "../../components/shop/Product";
+import TablePagination from '@mui/material/TablePagination';
+
+function Pagination({ recordCount = 0, recordPerPage = 10, setPageNo = () => { }, setPageSize = () => { } }) {
+	const [page, setPage] = React.useState(0);
+	const [rowsPerPage, setRowsPerPage] = React.useState(recordPerPage);
+
+	const handleChangePage = (
+		event,
+		newPage
+	) => {
+		setPage(newPage);
+		setPageNo(newPage);
+	};
+
+	const handleChangeRowsPerPage = (
+		event
+	) => {
+		setRowsPerPage(parseInt(event.target.value, 10));
+		setPage(0);
+		setPageNo(0);
+		setPageSize(event.target.value);
+	};
+
+	return (
+		<TablePagination
+			component="div"
+			count={recordCount}
+			page={page}
+			onPageChange={handleChangePage}
+			rowsPerPage={rowsPerPage}
+			onRowsPerPageChange={handleChangeRowsPerPage}
+		/>
+	);
+}
 
 export default function Index() {
 	const [isGridView, setIsGridView] = useState(true);
@@ -16,6 +50,10 @@ export default function Index() {
 	const [selectedBrandIdList, setSelectedBrandIdList] = useState([]);
 	const [categoryList, setCategoryList] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+
+	const [totalCount, setTotalCount] = useState(0);
+	const [pageNo, setPageNo] = useState(0);
+	const [pageSize, setPageSize] = useState(10);
 
 	useEffect(() => {
 		axios.get(apiUrl + "/web/getall/brand").then((response) => {
@@ -35,7 +73,9 @@ export default function Index() {
 				setCategoryList(response.data.appData);
 			}
 		});
+	}, []);
 
+	useEffect(() => {
 		axios
 			.post(apiUrl + "/web/getall/product", {
 				pageSize: 20,
@@ -51,11 +91,12 @@ export default function Index() {
 						setProductList(localProductList);
 					} else {
 						setProductList(response.data.appData.rows);
+						setTotalCount(response.data.appData.count);
 					}
 					setIsLoading(false);
 				}
 			});
-	}, [query.category]);
+	}, [query.category, pageNo, pageSize]);
 
 	const handleCategorySelect = (categoryId) => {
 		setIsLoading(true);
@@ -240,6 +281,11 @@ export default function Index() {
 														productList.length > 0 &&
 														productList.map((product, i) => <Product key={i} product={product} viewType={isGridView} shopPage={true} />)
 													}
+												</div>
+												<div className='row'>
+													<div className="col-12">
+														<Pagination recordCount={totalCount} recordPerPage={pageSize} setPageNo={(n) => setPageNo(n)} setPageSize={(n) => setPageSize(n)} />
+													</div>
 												</div>
 											</div>
 										</div>
