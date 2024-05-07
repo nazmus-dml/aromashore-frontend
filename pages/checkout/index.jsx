@@ -76,6 +76,8 @@ export default function Index({ user, customerData }) {
       customer_type: customerData.customercategory.title,
       customer_type_id: customerData.customercategory.id,
       customer_no: customerData.customer_no,
+      firstname: customerData.firstname,
+      lastname: customerData.lastname,
       customer_name: customerData.firstname + customerData.lastname,
       customer_contact: customerData.contact,
       customer_email: customerData.email,
@@ -251,6 +253,7 @@ export default function Index({ user, customerData }) {
       shippingAddressCopy.products = JSON.stringify(cartProducts);
       shippingAddressCopy.amount = totalAmount;
       shippingAddressCopy.total_weight = totalWeight;
+      shippingAddressCopy.customer_name = shippingAddressCopy.firstname + shippingAddressCopy.lastname;
       // setShippingAddress(shippingAddressCopy);
 
       // console.log("all info", shippingAddressCopy);

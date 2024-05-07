@@ -6,7 +6,7 @@ import Card from "react-bootstrap/Card";
 import Image from "next/image";
 
 export default function Product({ product, viewType = true, shopPage = false }) {
-	console.log(product)
+	// console.log(product)
 	const { add_TO_CART } = useContext(AppStore);
 	const [tabType, setTabType] = useState(1);
 	const [qty, setQty] = useState(1);

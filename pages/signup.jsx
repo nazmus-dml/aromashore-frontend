@@ -80,20 +80,20 @@ function Signup() {
 		e.preventDefault();
 		const errorsCopy = validate(user);
 		setErrors(errorsCopy);
-		console.log(errorsCopy);
-		console.log(user);
+		// console.log(errorsCopy);
+		// console.log(user);
 		if (errorsCopy) return;
-		// try {
-		// 	const { data } = await register(user);
-		// 	toast(data.appMessage);
-		// 	router.push('/');
-		// } catch (ex) {
-		// 	if (ex.response && ex.response.status === 400) {
-		// 		const errorsTemp = { ...errors };
-		// 		errorsTemp.email = ex.response.data;
-		// 		setErrors(errorsTemp);
-		// 	}
-		// }
+		try {
+			const { data } = await register(user);
+			toast(data.appMessage);
+			router.push('/');
+		} catch (ex) {
+			if (ex.response && ex.response.status === 400) {
+				const errorsTemp = { ...errors };
+				errorsTemp.email = ex.response.data;
+				setErrors(errorsTemp);
+			}
+		}
 	};
 	return (
 		<>

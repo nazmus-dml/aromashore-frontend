@@ -1,20 +1,38 @@
+import React, { useState, useEffect, useContext } from "react";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import React, { useState } from "react";
+import { AppStore } from "../../store/AppStore";
 import { TabPanel, useTabs } from "react-headless-tabs";
 import CustomerCCProfile from "../../components/userdetails/CustomerCCProfile";
 import OrderInfo from "../../components/userdetails/order_info";
 import PersonalInfo from "../../components/userdetails/personal_info";
 import Layout from "../../layouts/Layout";
 import { getprofileByCustomer, updateprofilePicture } from "../../services/webCustomerService";
+import { useRouter } from "next/router";
 
-export default function Index({ user, customerprofile }) {
+export default function Index() {
+	const router = useRouter();
+	const { user } = useContext(AppStore);
+	const [customerprofile, setCustomerprofile] = useState(null)
+	useEffect(() => {
+		console.log(user);
+		if (user) {
+			getprofileByCustomer(user).then(profile => {
+				console.log("profileData.appData --------> ", profile);
+				setCustomerprofile(profile.data.appData);
+			}).catch(err => console.log(err))
+		} else {
+			window.location = "/";
+		}
+	}, [user])
+
 	const [profileImgUrl, setProfileImgUrl] = useState(
 		customerprofile?.customerprofile?.image
 			? customerprofile?.customerprofile?.image
 			: "/app/assets/images/avatar.jpg"
 	);
+	console.log('user profile --->>', customerprofile)
 
 	const previewFile = (e) => {
 		let file = e.target.files[0];
@@ -50,91 +68,83 @@ export default function Index({ user, customerprofile }) {
 
 	return (
 		<Layout title='Customer Profile'>
-			<div id='content'>
-				<div className='container-fluid'>
-					<div className='row'>
-						<div className='col-12'>
-							<div className='profile_image_background'>
-								<div className='profile_image_box'>
-									<Image className='img-thumbnail mt-4' src={profileImgUrl} alt='Picture of the author' width={150} height={150} />
-									<div
-										className='profile_image'
-										title='Upload Profile Image'
-										onClick={(e) => {
-											uploadHandle("profile_image_id");
-										}}>
-										<FontAwesomeIcon icon={faImage} />
+			{user ?
+				<div id='content'>
+					<div className='container-fluid'>
+						<div className='row'>
+							<div className='col-12'>
+								<div className='profile_image_background'>
+									<div className='profile_image_box'>
+										<Image className='img-thumbnail mt-4' src={profileImgUrl} alt='Picture of the author' width={150} height={150} />
+										<div
+											className='profile_image'
+											title='Upload Profile Image'
+											onClick={(e) => {
+												uploadHandle("profile_image_id");
+											}}>
+											<FontAwesomeIcon icon={faImage} />
+										</div>
+										<input
+											hidden
+											type='file'
+											className='form-control'
+											id='profile_image_id'
+											onChange={(e) => {
+												previewFile(e);
+											}}
+										/>
 									</div>
-									<input
-										hidden
-										type='file'
-										className='form-control'
-										id='profile_image_id'
-										onChange={(e) => {
-											previewFile(e);
-										}}
-									/>
 								</div>
 							</div>
 						</div>
-					</div>
-					<nav style={{ backgroundColor: "#f0f0f0" }}>
-						<TabSelector isActive={selectedTab === "profile"} onClick={() => setSelectedTab("profile")}>
-							Personal Information
-						</TabSelector>
-						<TabSelector isActive={selectedTab === "cards"} onClick={() => setSelectedTab("cards")}>
-							Card Information
-						</TabSelector>
-						<TabSelector isActive={selectedTab === "orders"} onClick={() => setSelectedTab("orders")}>
-							Order Information
-						</TabSelector>
-					</nav>
+						<nav style={{ backgroundColor: "#f0f0f0", textAlign: 'center' }}>
+							<TabSelector isActive={selectedTab === "profile"} onClick={() => setSelectedTab("profile")}>
+								Personal Information
+							</TabSelector>
+							<TabSelector isActive={selectedTab === "cards"} onClick={() => setSelectedTab("cards")}>
+								Card Information
+							</TabSelector>
+							<TabSelector isActive={selectedTab === "orders"} onClick={() => setSelectedTab("orders")}>
+								Order Information
+							</TabSelector>
+						</nav>
 
-					<div className='p-3'>
-						<TabPanel hidden={selectedTab !== "profile"}>
-							<PersonalInfo user={user} profile={customerprofile} />
-						</TabPanel>
-						<TabPanel hidden={selectedTab !== "cards"}>
-							{/* <CardInfo user={user} profile={customerprofile.customerprofile.cc_profile} /> */}
-							{customerprofile?.customerprofile?.cc_profile ?
-								<CustomerCCProfile customerId={user.uid} creditCard={JSON.parse(customerprofile?.customerprofile?.cc_profile)} /> : <CustomerCCProfile customerId={user.uid} creditCard={[]} />
-							}
-						</TabPanel>
-						<TabPanel hidden={selectedTab !== "orders"}>
-							<OrderInfo user={user} />
-						</TabPanel>
+						<div className='p-3'>
+							<TabPanel hidden={selectedTab !== "profile"}>
+								{user && customerprofile ? <PersonalInfo user={user} profile={customerprofile} /> : <></>}
+							</TabPanel>
+							<TabPanel hidden={selectedTab !== "cards"}>
+								{/* <CardInfo user={user} profile={customerprofile.customerprofile.cc_profile} /> */}
+								{user ? (customerprofile?.customerprofile?.cc_profile ?
+									<CustomerCCProfile customerId={user.uid} creditCard={JSON.parse(customerprofile?.customerprofile?.cc_profile)} /> : <CustomerCCProfile customerId={user.uid} creditCard={[]} />) : <></>
+								}
+							</TabPanel>
+							<TabPanel hidden={selectedTab !== "orders"}>
+								{user ? <OrderInfo user={user} /> : <></>}
+							</TabPanel>
+						</div>
 					</div>
-				</div>
-			</div>
+				</div> : <h1 className="alert alert-danger text-center w-100 p-5">Unauthorized!</h1>
+			}
 		</Layout>
 	);
 }
 
-export async function getServerSideProps(context) {
-	try {
-		const user = context.req.cookies.user ? JSON.parse(context.req.cookies.user) : null;
-
-		if (!user) {
-			return {
-				redirect: {
-					destination: "/login"
-				}
-			};
-		}
-		const { data: profileData } = await getprofileByCustomer(user);
-		console.log("profileData.appData --------> ", profileData.appData);
-		return {
-			props: {
-				customerprofile: profileData.appData,
-				user: user
-			}
-		};
-	} catch (error) {
-		return {
-			props: {
-				customerprofile: {},
-				user: {}
-			}
-		};
-	}
-}
+// export async function getServerSideProps(context) {
+// 	try {
+// 		const user = context.req.cookies.user ? JSON.parse(context.req.cookies.user) : null;
+// 		if (!user) {
+// 			return {
+// 				redirect: {
+// 					destination: "/login"
+// 				}
+// 			};
+// 		}
+// 	} catch (error) {
+// 		return {
+// 			redirect: {
+// 				destination: "/login"
+// 			}
+// 		};
+// 	}
+// }

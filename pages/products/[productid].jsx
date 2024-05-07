@@ -335,7 +335,7 @@ function ProductDetail() {
 													</div>
 												</div>
 												<hr />
-												<div className='d-flex justify-content-between'>
+												<div className='d-flex justify-content-between align-items-center'>
 													<span>
 														Size
 														<select

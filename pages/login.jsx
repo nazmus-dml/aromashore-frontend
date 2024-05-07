@@ -6,12 +6,10 @@ import { login } from "../services/authService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AppStore } from "../store/AppStore";
-import { useRouter } from "next/router";
 
 function Login() {
-	const router = useRouter();
 	const { setUSER } = useContext(AppStore);
-	const [user, setUser] = useState({
+	const [user, setUserForm] = useState({
 		username: "",
 		password: "",
 		rememberMe: false
@@ -27,7 +25,7 @@ function Login() {
 		setErrors(errorsCopy);
 		let userCopy = { ...user };
 		userCopy[e.currentTarget.name] = e.currentTarget.value;
-		setUser(userCopy);
+		setUserForm(userCopy);
 	};
 
 	const handleSubmit = async (e) => {
@@ -38,10 +36,10 @@ function Login() {
 		if (errorsCopy) return;
 		try {
 			let data = await login(user);
+			console.log('login---->', data)
 			toast(data.appMessage);
 			if (data.appStatus == false) return;
 			setUSER(data.appData);
-			router.push('/');
 		} catch (error) { }
 	};
 

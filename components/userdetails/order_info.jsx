@@ -31,7 +31,7 @@ export default function OrderInfo({ user, profile = [] }) {
         setOrderList([...data.appData])
       })
 
-	}, []);
+	}, [user]);
 
 	return (
 		<>

@@ -440,7 +440,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 									<th>Name On Card</th>
 									<th>Card Number</th>
 									<th>Status</th>
-									<th width={120}></th>
+									<th></th>
 								</tr>
 							</thead>
 							{ccProfileList?.length > 0 ? (
@@ -462,7 +462,7 @@ export default function CustomerCCProfile({ customerId, creditCard = [] }) {
 														"Inactive"
 													)}
 												</td>
-												<td className='text-center'>
+												<td className='text-center' width={120}>
 													{Number(status) === 1 ? (
 														<></>
 													) : (

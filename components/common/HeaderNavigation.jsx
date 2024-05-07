@@ -25,10 +25,11 @@ export default function HeaderNavigation({ openCart }) {
 	const [gender, setGender] = useState(null);
 	let { totalQty } = calculateCart(cart);
 
+	// useEffect(() => {},[])
 	useEffect(() => {
-		// console.log('header', cart)
+		console.log('header navigation ------->>', user, cart, openCart);
 		axios.get(apiUrl + "/web/get/webmenu").then((response) => {
-			console.log("waiting end", response);
+			// console.log("waiting end", response);
 			if (response.data.appStatus) {
 				// const bottomMenuList = response.data.appData;
 				// let bottomMenuListCopy = bottomMenuList?.map((item) => {
@@ -41,13 +42,12 @@ export default function HeaderNavigation({ openCart }) {
 			}
 		});
 
-		axios
-			.post(apiUrl + "/web/getall/product", {
-				pageSize: 10,
-				pageNo: 0
-			})
+		axios.post(apiUrl + "/web/getall/product", {
+			pageSize: 10,
+			pageNo: 0
+		})
 			.then((response) => {
-				console.log("HeaderNavigation ---- fetchProducts ------->", response);
+				// console.log("HeaderNavigation ---- fetchProducts ------->", response);
 				if (response.data.appStatus) {
 					setProductList(response.data.appData.rows);
 				}
@@ -265,11 +265,15 @@ export default function HeaderNavigation({ openCart }) {
 				{selectedMenu === null ? (
 					<></>
 				) : (
-					<div className='dropdown_mega_nav' onMouseLeave={() => handleSelectMenu(null)}>
+					// <div className='dropdown_mega_nav' onMouseLeave={() => handleSelectMenu(null)}>
+					<div className='dropdown_mega_nav'>
 						<div className='container-fluid'>
 							<div className='item_wrapper'>
 								<div className='item'>
-									<h4 className=''>{selectedMenu?.name}</h4>
+									<h4 className='d-flex justify-content-center align-items-center' onClick={() => handleSelectMenu(null)}>
+										{selectedMenu?.name}
+										<i className="mobile-mega-menu-close-button fas fa-times-circle text-danger ms-2"></i>
+									</h4>
 									<ul>
 										<li className='category_name' onClick={() => handleSelectedMenuAllProduct(selectedMenu.productcategories)}>
 											All
@@ -295,21 +299,23 @@ export default function HeaderNavigation({ openCart }) {
 										</li> */}
 									</ul>
 								</div>
-								{selectedCategory ?
-									selectedCategory?.products.map((product, i) => {
-										return (
-											<div key={i} className='item'>
-												{gender !== null ? product?.productdetail.gender === gender ? <Product product={product} /> : <></> : <Product product={product} />}
-											</div>
-										);
-									}) : selectedCategoryWiseAllProduct.map((product, i) => {
-										return (
-											<div key={i} className='item'>
-												{gender !== null ? product?.productdetail.gender === gender ? <Product product={product} /> : <></> : <Product product={product} />}
-											</div>
-										);
-									})
-								}
+								<div className="menu-product-list">
+									{selectedCategory ?
+										selectedCategory?.products.map((product, i) => {
+											return (
+												<div key={i} className='item'>
+													<Product product={product} />
+												</div>
+											);
+										}) : selectedCategoryWiseAllProduct.map((product, i) => {
+											return (
+												<div key={i} className='item'>
+													<Product product={product} />
+												</div>
+											);
+										})
+									}
+								</div>
 							</div>
 						</div>
 					</div>

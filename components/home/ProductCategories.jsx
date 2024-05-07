@@ -41,7 +41,7 @@ function ProductCategories() {
 						) : (
 							categoryList?.map((item) => (
 								<div className='col-12 col-md-4 col-lg-3 col-xl-2' key={item.id}>
-									<div className='categiry-box mb-2'>
+									<div className='category-box mb-2'>
 										<Link href={"shop?category=" + item.id}>
 											<h3 className='category-item-name'>{item.category_name} </h3>
 										</Link>

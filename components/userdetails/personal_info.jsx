@@ -176,13 +176,13 @@ export default function PersonalInfo({ user, profile }) {
 			order_info_notification = JSON.parse(profile?.customerprofile?.order_info_notification);
 		}
 
-		handleProfileCountryInputChange({ value: Number(profile.customercontact.country), label: `${profile.customercontact.country_name} (${profile.customercontact.country_code})` });
-        if (profile.customercontact.state) {
-            handleProfileStateInputChange({ value: Number(profile.customercontact.state), label: `${profile.customercontact.state_name} (${profile.customercontact.state_code})` });
-        }
-        if (profile.customercontact.city) {
-            handleProfileCityInputChange({ value: Number(profile.customercontact.city), label: profile.customercontact.city_name });
-        }
+		handleProfileCountryInputChange({ value: Number(customercontact.country), label: `${customercontact.country_name} (${customercontact.country_code})` });
+		if (customercontact.state) {
+			handleProfileStateInputChange({ value: Number(customercontact.state), label: `${customercontact.state_name} (${customercontact.state_code})` });
+		}
+		if (customercontact.city) {
+			handleProfileCityInputChange({ value: Number(customercontact.city), label: customercontact.city_name });
+		}
 
 		setBean({
 			customer_no: profile?.customer_no,
@@ -395,18 +395,14 @@ export default function PersonalInfo({ user, profile }) {
 		<>
 			<ToastContainer />
 			<div className='bg-light'>
-
 				{/* Profile Information */}
 				<div className='card border-0 bg-transparent'>
 					<div className='card-header'>
 						<h5 className='mb-0'>Profile Information</h5>
 					</div>
-
 					<div className='card-body'>
-
 						{/* parent */}
 						<div className='row'>
-
 							{/* child 1 */}
 							<div className='col-12 col-md-7'>
 								{/* 1.1 - Personal Info */}
@@ -429,6 +425,11 @@ export default function PersonalInfo({ user, profile }) {
 													<th>Username</th>
 													<td colSpan={3}>{bean.username}</td>
 												</tr>
+												{/* comp name */}
+												<tr>
+													<th>Company Name</th>
+													<td colSpan={3}>{bean.company}</td>
+												</tr>
 												{/* fn + ln */}
 												<tr>
 													<th>First Name</th>
@@ -436,44 +437,47 @@ export default function PersonalInfo({ user, profile }) {
 													<th>Last Name</th>
 													<td>{bean.lastname}</td>
 												</tr>
-
-												{/* comp name */}
 												<tr>
-													<th>Company Name</th>
-													<td colSpan={3}>{bean.company}</td>
+													<th>Contact</th>
+													<td>{bean.contact.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3")}</td>
+													<th>Phone No</th>
+													<td>{bean.phone_no}</td>
+
 												</tr>
-
-												{/* group + race */}
 												<tr>
+													<th>Email</th>
+													<td>{bean.email}</td>
+													<th>Tax ID</th>
+													<td>{bean.tax_id}</td>
+												</tr>
+												{/* group + race */}
+												{/* <tr>
 													<th>Group</th>
 													<td>{getNameFromListById(groupTypeList, bean.group)}</td>
 													<th>Race</th>
 													<td>{getNameFromListById(raceTypeList, bean.race)}</td>
-												</tr>
-
+												</tr> */}
 												{/* zone + location */}
-												<tr>
+												{/* <tr>
 													<th>Zone</th>
 													<td>{bean.zone}</td>
 													<th>Location</th>
 													<td>{bean.location}</td>
-												</tr>
-
+												</tr> */}
 												{/* service + carrier */}
-												<tr>
+												{/* <tr>
 													<th>Service</th>
 													<td>{getNameFromListById(serviceTypeList, bean.service)}</td>
 													<th>Carrier</th>
 													<td>{getNameFromListById(carrierTypeList, bean.carrier)}</td>
-												</tr>
-
+												</tr> */}
 												{/* limit + taxID */}
-												<tr>
+												{/* <tr>
+													<th>Fax</th>
+													<td>{bean.fax}</td>
 													<th>Limit</th>
 													<td>{bean.limit}</td>
-													<th>Tax ID</th>
-													<td>{bean.tax_id}</td>
-												</tr>
+												</tr> */}
 											</tbody>
 										</table>
 									</div>
@@ -492,18 +496,6 @@ export default function PersonalInfo({ user, profile }) {
 									<div className='card-body'>
 										<table className='table'>
 											<tbody>
-												<tr>
-													<th>Contact</th>
-													<td>{bean.contact.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3")}</td>
-													<th>Email</th>
-													<td>{bean.email}</td>
-												</tr>
-												<tr>
-													<th>Phone No</th>
-													<td>{bean.phone_no}</td>
-													<th>Fax</th>
-													<td>{bean.fax}</td>
-												</tr>
 												<tr>
 													<th>Address Line One</th>
 													<td>{bean.address_line_one}</td>
@@ -536,8 +528,51 @@ export default function PersonalInfo({ user, profile }) {
 
 							{/* child 2 - Change Password + Other Info */}
 							<div className='col-12 col-md-5'>
-								{/* Change Password */}
+
+								{/* Other Info */}
 								<div className='card'>
+									<div className='card-header d-flex align-items-center justify-content-between'>
+										Other Info
+										<i
+											className='fas fa-edit hand'
+											onClick={() => {
+												setShowPersonalInfoModal(true);
+											}}></i>
+									</div>
+									<div className='card-body'>
+										<div className='row'>
+											<div className='col-12 col-sm-6'>
+												<label className='fw-bold mb-2'>Subscription</label>
+												<div>
+													<div className='form-check form-check-inline'>
+														<input className='form-check-input' type='checkbox' checked={bean.subscription.subscriptionEmail} readOnly />
+														<label className='form-check-label'>Email</label>
+													</div>
+													<div className='form-check form-check-inline'>
+														<input className='form-check-input' type='checkbox' checked={bean.subscription.subscriptionText} readOnly />
+														<label className='form-check-label'>Text</label>
+													</div>
+												</div>
+											</div>
+											<div className='col-12 col-sm-6'>
+												<label className='fw-bold mb-2'>Notification</label>
+												<div>
+													<div className='form-check form-check-inline'>
+														<input className='form-check-input' type='checkbox' checked={bean.order_info_notification.orderInfoNotificationEmail} readOnly />
+														<label className='form-check-label'>Email</label>
+													</div>
+													<div className='form-check form-check-inline'>
+														<input className='form-check-input' type='checkbox' checked={bean.order_info_notification.orderInfoNotificationText} readOnly />
+														<label className='form-check-label'>Text</label>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+
+								{/* Change Password */}
+								<div className='card mt-3'>
 									<div className='card-header'>Change Password</div>
 									<div className='card-body'>
 										<form onSubmit={handleChangePasswordSubmit}>
@@ -579,53 +614,16 @@ export default function PersonalInfo({ user, profile }) {
 										</form>
 									</div>
 								</div>
-
-								{/* Other Info */}
-								<div className='card mt-3'>
-									<div className='card-header'>Other Info</div>
-									<div className='card-body'>
-										<div className='row'>
-											<div className='col-12 col-sm-6'>
-												<label className='fw-bold mb-2'>Subscription</label>
-												<div>
-													<div className='form-check form-check-inline'>
-														<input className='form-check-input' type='checkbox' checked={bean.subscription.subscriptionEmail} readOnly />
-														<label className='form-check-label'>Email</label>
-													</div>
-													<div className='form-check form-check-inline'>
-														<input className='form-check-input' type='checkbox' checked={bean.subscription.subscriptionText} readOnly />
-														<label className='form-check-label'>Text</label>
-													</div>
-												</div>
-											</div>
-											<div className='col-12 col-sm-6'>
-												<label className='fw-bold mb-2'>Notification</label>
-												<div>
-													<div className='form-check form-check-inline'>
-														<input className='form-check-input' type='checkbox' checked={bean.order_info_notification.orderInfoNotificationEmail} readOnly />
-														<label className='form-check-label'>Email</label>
-													</div>
-													<div className='form-check form-check-inline'>
-														<input className='form-check-input' type='checkbox' checked={bean.order_info_notification.orderInfoNotificationText} readOnly />
-														<label className='form-check-label'>Text</label>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-
 			</div>
 
 			<Modal show={showPersonalInfoModal} onHide={() => setShowPersonalInfoModal(false)} size='lg'>
 				<Modal.Header closeButton>
-					<Modal.Title>Address</Modal.Title>
+					<Modal.Title>Personal & Other Info</Modal.Title>
 				</Modal.Header>
-
 				<Modal.Body>
 					<div className='row'>
 						<div className='col-12 col-md-4'>

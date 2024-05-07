@@ -78,8 +78,8 @@ export default function Index() {
 	useEffect(() => {
 		axios
 			.post(apiUrl + "/web/getall/product", {
-				pageSize: 20,
-				pageNo: 0
+				pageSize: pageSize,
+				pageNo: pageNo
 			})
 			.then((response) => {
 				// console.log(response);
@@ -211,9 +211,9 @@ export default function Index() {
 												<h2 className='sidebar-categories'>Categories</h2>
 											</div>
 											<ul>
-												<li onClick={() => handleCategorySelect("all")}>All</li>
+												<li onClick={() => handleCategorySelect("all")} style={{ cursor: 'pointer' }}>All</li>
 												{categoryList.map((category) =>
-													<li key={category.id} onClick={() => handleCategorySelect(category.id)}>
+													<li key={category.id} onClick={() => handleCategorySelect(category.id)} style={{ cursor: 'pointer' }}>
 														{category.category_name}
 													</li>
 												)}

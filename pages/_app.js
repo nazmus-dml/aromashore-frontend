@@ -95,17 +95,19 @@ function MyApp({
   const setUSER = useCallback((user) => {
     Cookies.set("user", JSON.stringify(user));
     setUser(user);
+    // Router.push('/');
+    window.location = "/";
   }, []);
 
   const logout = useCallback(() => {
     Cookies.remove("user");
     setUser(null);
-    Router.push('/');
+    // Router.push('/');
     // setCompanyInfo(null);
     // window.location = "/";
   }, []);
 
-  const value = {
+  const storeValue = {
     cart,
     add_TO_CART,
     delete_ITEM_FROM_CART,
@@ -119,7 +121,7 @@ function MyApp({
   };
 
   return (
-    <AppStore.Provider value={value}>
+    <AppStore.Provider value={storeValue}>
       <Component {...pageProps} />
     </AppStore.Provider>
   );

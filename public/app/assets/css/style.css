@@ -8019,9 +8019,10 @@ ul {
   margin-bottom: 6.25rem;
 }
 
-/* .cart__table {
-  margin-bottom: 2rem;
-} */
+.cart__table {
+  width: 100%;
+  overflow-x: auto;
+}
 
 .cart__table table thead tr th,
 .cart__table table tbody tr td {
@@ -9668,6 +9669,8 @@ ul {
 
 .shop-sidebar__section.-refine .shop-sidebar__section__item {
   margin-bottom: 2.1875em;
+  max-height: 50vh;
+  overflow: auto;
 }
 
 .shop-sidebar__section.-refine .shop-sidebar__section__item h5 {
