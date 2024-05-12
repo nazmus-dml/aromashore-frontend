@@ -55,6 +55,9 @@ export default function Index() {
 	const [pageNo, setPageNo] = useState(0);
 	const [pageSize, setPageSize] = useState(10);
 
+	const [showBrandFilter, setShowBrandFilter] = useState(false);
+	const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+
 	useEffect(() => {
 		axios.get(apiUrl + "/web/getall/brand").then((response) => {
 			// console.log(response);
@@ -208,40 +211,86 @@ export default function Index() {
 									<div className='shop-sidebar__content'>
 										<div className='shop-sidebar__section -categories'>
 											<div className='section-title -style1 -medium' style={{ marginBottom: "1.875em" }}>
-												<h2 className='sidebar-categories'>Categories</h2>
+												<h2 className='sidebar-categories'>
+													Categories
+												</h2>
+												<i className="fas fa-filter fa-lg mobile-filter" onClick={() => setShowCategoryFilter(ov => !ov)}></i>
 											</div>
-											<ul>
-												<li onClick={() => handleCategorySelect("all")} style={{ cursor: 'pointer' }}>All</li>
-												{categoryList.map((category) =>
-													<li key={category.id} onClick={() => handleCategorySelect(category.id)} style={{ cursor: 'pointer' }}>
-														{category.category_name}
-													</li>
-												)}
-											</ul>
-										</div>
-										<div className='shop-sidebar__section -refine'>
-											<div className='section-title -style1 -medium' style={{ marginBottom: "1.875em" }}>
-												<h2 className='sidebar-refine-search'>Brand</h2>
+											<div className="mobile-filter">
+												{showCategoryFilter ?
+													<ul>
+														<li onClick={() => handleCategorySelect("all")} style={{ cursor: 'pointer' }}>All</li>
+														{categoryList.map((category) =>
+															<li key={category.id} onClick={() => handleCategorySelect(category.id)} style={{ cursor: 'pointer' }}>
+																{category.category_name}
+															</li>
+														)}
+													</ul> : <></>
+												}
 											</div>
-											<div className='shop-sidebar__section__item'>
+											<div className="desktop-filter">
 												<ul>
-													{productBrandList?.map((brand, i) =>
-														<li key={i}>
-															<label htmlFor={"brand_id_" + brand.id}>
-																<input
-																	type='checkbox'
-																	checked={brand.isChecked}
-																	name='brand_name'
-																	id={"brand_id_" + brand.id}
-																	onChange={(e) => {
-																		handleBandSelect(e.target.checked, brand);
-																	}}
-																/>
-																{brand.name}
-															</label>
+													<li onClick={() => handleCategorySelect("all")} style={{ cursor: 'pointer' }}>All</li>
+													{categoryList.map((category) =>
+														<li key={category.id} onClick={() => handleCategorySelect(category.id)} style={{ cursor: 'pointer' }}>
+															{category.category_name}
 														</li>
 													)}
 												</ul>
+											</div>
+										</div>
+										<div className='shop-sidebar__section -refine'>
+											<div className='section-title -style1 -medium' style={{ marginBottom: "1.875em" }}>
+												<h2 className='sidebar-refine-search'>
+													Brand
+												</h2>
+												<i className="fas fa-filter fa-lg mobile-filter" onClick={() => setShowBrandFilter(ov => !ov)}></i>
+											</div>
+											<div className="mobile-filter">
+												{showBrandFilter ?
+													<div className='shop-sidebar__section__item'>
+														<ul>
+															{productBrandList?.map((brand, i) =>
+																<li key={i}>
+																	<label htmlFor={"brand_id_" + brand.id}>
+																		<input
+																			type='checkbox'
+																			checked={brand.isChecked}
+																			name='brand_name'
+																			id={"brand_id_" + brand.id}
+																			onChange={(e) => {
+																				handleBandSelect(e.target.checked, brand);
+																			}}
+																		/>
+																		{brand.name}
+																	</label>
+																</li>
+															)}
+														</ul>
+													</div> : <></>
+												}
+											</div>
+											<div className="desktop-filter">
+												<div className='shop-sidebar__section__item'>
+													<ul>
+														{productBrandList?.map((brand, i) =>
+															<li key={i}>
+																<label htmlFor={"brand_id_" + brand.id}>
+																	<input
+																		type='checkbox'
+																		checked={brand.isChecked}
+																		name='brand_name'
+																		id={"brand_id_" + brand.id}
+																		onChange={(e) => {
+																			handleBandSelect(e.target.checked, brand);
+																		}}
+																	/>
+																	{brand.name}
+																</label>
+															</li>
+														)}
+													</ul>
+												</div>
 											</div>
 										</div>
 									</div>

@@ -9,6 +9,7 @@ import { calculateCart } from "../../services/utilityService";
 import Product from "../shop/Product";
 import Image from "next/image";
 import "swiper/css";
+import { useRouter } from "next/router";
 
 export default function HeaderNavigation({ openCart }) {
 	const { cart, user, logout } = useContext(AppStore);
@@ -17,6 +18,7 @@ export default function HeaderNavigation({ openCart }) {
 	// const { state } = useContext(AppContext);
 	const [menuList, setMenuList] = useState([]);
 	const [selectedMenu, setSelectedMenu] = useState(null);
+	const [selectedMobileMenu, setSelectedMobileMenu] = useState(null);
 	const [selectedCategory, setSelectedCategory] = useState(null);
 	const [selectedCategoryWiseAllProduct, setSelectedCategoryWiseAllProduct] = useState([]);
 	const [productList, setProductList] = useState([]);
@@ -24,6 +26,7 @@ export default function HeaderNavigation({ openCart }) {
 	// let { totalQty } = calculateCart(cart);
 	const [gender, setGender] = useState(null);
 	let { totalQty } = calculateCart(cart);
+	const router = useRouter();
 
 	// useEffect(() => {},[])
 	useEffect(() => {
@@ -59,11 +62,20 @@ export default function HeaderNavigation({ openCart }) {
 		if (menu !== null) {
 			setSelectedMenu(menu);
 			handleSelectedMenuAllProduct(menu.productcategories);
-			setSelectedCategory(null);
+			handleSelectCategory(null);
 		} else {
 			setSelectedMenu(null);
 			handleSelectedMenuAllProduct(null);
-			setSelectedCategory(null);
+			handleSelectCategory(null);
+		}
+	};
+
+	const handleSelectMobileMenu = (menu) => {
+		console.log(menu);
+		if (menu !== null) {
+			setSelectedMobileMenu(menu);
+		} else {
+			setSelectedMobileMenu(null);
 		}
 	};
 
@@ -104,6 +116,13 @@ export default function HeaderNavigation({ openCart }) {
 		setFilteredProductList(filterList);
 	};
 
+	const goToSelectedCategory = (categoryId) => {
+		console.log(categoryId)
+		handleSelectMenu(null);
+		let href = "/shop?category=" + categoryId;
+		router.push(href);
+	}
+
 	return (
 		<>
 			<nav className='navbar fixed-top navbar-expand-lg navbar-dark bg-dark ps-2 pe-2'>
@@ -121,7 +140,41 @@ export default function HeaderNavigation({ openCart }) {
 							<h5 className='offcanvas-title text-light' id='offcanvasNavbarLabel'>
 								Aromashore
 							</h5>
-							<button type='button' className='btn-close' data-bs-dismiss='offcanvas' aria-label='Close'></button>
+							<div>
+								<button
+									className='btn btn-outline-light btn-sm position-relative'
+									onClick={(e) => {
+										openCart(true);
+										e.preventDefault();
+									}}>
+									<i className='fas fa-shopping-bag'>{totalQty > 0 ? <span className='cart__quantity'>{totalQty}</span> : <></>}</i>
+								</button>
+								{!user && (
+									<Link href='/login'>
+										<button className={`nav-item ${totalQty > 0 ? "ms-4" : "ms-2"} me-2 btn btn-outline-light btn-sm`}>
+											<i className='fas fa-user'></i>
+										</button>
+									</Link>
+								)}
+								{user && (
+									<>
+										<Link href='/user'>
+											<button className={`nav-item ${totalQty > 0 ? "ms-4" : "ms-2"} me-2 btn btn-outline-secondary btn-sm`}>
+												<i className='fas fa-user'></i>
+												<span className='customer-name'>{user.username}</span>
+											</button>
+										</Link>
+										<button
+											className='btn btn-danger btn-sm'
+											onClick={() => {
+												Cookies.remove("login");
+												logout();
+											}}>
+											<i className='fa fa-sign-out'></i>
+										</button>
+									</>
+								)}
+							</div>
 						</div>
 						<div className='offcanvas-body'>
 							<ul className='navbar-nav mr-auto desktop-tablet-view'>
@@ -160,17 +213,7 @@ export default function HeaderNavigation({ openCart }) {
 									<></>
 								)}
 							</ul>
-							<ul className='navbar-nav mr-auto mobile-view'>
-								{menuList?.map((menu, i) => (
-									<li key={menu.id} className='nav-item' onClick={() => handleSelectMenu(menu)}>
-										<a className='nav-link' href='#'>
-											{menu.name}
-											<i className='fas fa-angle-down ms-2'></i>
-										</a>
-									</li>
-								))}
-							</ul>
-							<ul className='navbar-nav'>
+							<ul className='navbar-nav desktop-tablet-view'>
 								<li className='nav-item me-lg-2 search-box'>
 									<input type='search' id='search' className='form-control form-control-sm' placeholder='Search by Product Name...' onChange={handleInput} onFocus={handleInput} />
 								</li>
@@ -215,6 +258,32 @@ export default function HeaderNavigation({ openCart }) {
 										</li>
 									</>
 								)}
+							</ul>
+							<ul className='navbar-nav mr-auto mobile-view'>
+								<li className='nav-item me-lg-2 search-box'>
+									<input type='search' id='search' className='form-control form-control-sm' placeholder='Search by Product Name...' onChange={handleInput} onFocus={handleInput} />
+								</li>
+								<div className='dropdown'>
+									{menuList?.map((menu, i) => (
+										<li className='nav-item'>
+											<a className='nav-link' onClick={() => handleSelectMobileMenu(menu)} href='#' data-bs-toggle='dropdown' aria-expanded='false'>
+												{menu.name}
+												<i className='fas fa-angle-down ms-2'></i>
+											</a>
+											<div className='dropdown-menu ps-3'>
+												<li data-bs-dismiss='offcanvas' onClick={() => goToSelectedCategory('all')}>
+													All
+												</li>
+												{selectedMobileMenu && selectedMobileMenu.productcategories.map(pcat =>
+													<li key={pcat.id} data-bs-dismiss='offcanvas' onClick={() => goToSelectedCategory(pcat.id)}>
+														{pcat.category_name}
+													</li>
+												)}
+											</div>
+										</li>
+									))}
+								</div>
+								<button type='button' className='mobile-menu-close btn-close' data-bs-dismiss='offcanvas' onClick={() => handleSelectMenu(null)} aria-label='Close'></button>
 							</ul>
 						</div>
 					</div>
@@ -265,11 +334,11 @@ export default function HeaderNavigation({ openCart }) {
 				{selectedMenu === null ? (
 					<></>
 				) : (
-					// <div className='dropdown_mega_nav' onMouseLeave={() => handleSelectMenu(null)}>
-					<div className='dropdown_mega_nav'>
+					// <div className='dropdown_mega_nav'>
+					<div className='dropdown_mega_nav' onMouseLeave={() => handleSelectMenu(null)}>
 						<div className='container-fluid'>
 							<div className='item_wrapper'>
-								<div className='item'>
+								<div className='item filter'>
 									<h4 className='d-flex justify-content-center align-items-center' onClick={() => handleSelectMenu(null)}>
 										{selectedMenu?.name}
 										<i className="mobile-mega-menu-close-button fas fa-times-circle text-danger ms-2"></i>

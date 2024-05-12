@@ -109,7 +109,7 @@ export default function Index() {
 							</TabSelector>
 						</nav>
 
-						<div className='p-3'>
+						<div className='p-3' style={{ overflowY: 'auto', height: '60vh' }}>
 							<TabPanel hidden={selectedTab !== "profile"}>
 								{user && customerprofile ? <PersonalInfo user={user} profile={customerprofile} /> : <></>}
 							</TabPanel>
