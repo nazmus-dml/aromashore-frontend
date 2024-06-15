@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Image from "next/image";
 import Cookies from "js-cookie";
 import axios from "axios";
-import apiUrl from "../../config";
+import {apiUrl} from "../../config";
 
 export default function Footer() {
 	const { user } = useContext(AppStore);

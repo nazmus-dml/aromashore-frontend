@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Slider from "react-slick";
 import Link from "next/link";
 import axios from "axios";
-import apiUrl from "../../config";
+import {apiUrl} from "../../config";
 import Product from "../shop/Product";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Image from "next/image";
@@ -71,7 +71,7 @@ export default function PopularProduct({ categoryId = null }) {
 											console.log(product, index);
 											return (
 												<SwiperSlide key={product.id}>
-													{product.productimages[0] ? <Image src={product.productimages[0]?.image} alt={product.productimages[0]?.name} width={250} height={250} /> : <Image src='/app/assets/images/200.svg' alt='Placeholder' width={250} height={250} />}
+													{product.productimages[0] ? <img src={product.productimages[0]?.image} alt={product.productimages[0]?.name} width={250} height={250} /> : <img src='/app/assets/images/200.svg' alt='Placeholder' width={250} height={250} />}
 												</SwiperSlide>
 											)
 										}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import axios from "axios";
-import apiUrl from "../../config";
+import {apiUrl} from "../../config";
 import Product from "../shop/Product";
 
 const NewProductSlider = () => {

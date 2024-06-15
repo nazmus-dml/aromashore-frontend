@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout";
 import PopularProduct from "../../components/common/PopularProduct";
 import SimilarProduct from "../../components/common/SimilarProduct";
 import ProductBundle from "../../components/shop/ProductBundle";
-import apiUrl from "../../config";
+import { apiUrl } from "../../config";
 import { AppStore } from "../../store/AppStore";
 import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
@@ -14,6 +14,7 @@ import Cart from "./Icons";
 import parse from "html-react-parser";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { globalProductImageAddress } from '../../config';
 
 function AddToCart({ addToCart, removeFromCart, ...props }) {
 	const [status, setStatus] = React.useState("removed");
@@ -30,24 +31,25 @@ function AddToCart({ addToCart, removeFromCart, ...props }) {
 		}
 	}, [status]);
 
-	function handleClick() {
+	function handleClickX() {
+		console.log('animation cart');
 		if (status === "removed") {
 			setStatus("adding");
 
-			if (typeof addToCart === "function") {
-				addToCart();
-			}
+			// if (typeof addToCart === "function") {
+			// 	addToCart();
+			// }
 		} else if (status === "added") {
 			setStatus("removed");
 
-			if (typeof removeFromCart === "function") {
-				removeFromCart();
-			}
+			// if (typeof removeFromCart === "function") {
+			// 	removeFromCart();
+			// }
 		}
 	}
 
 	return (
-		<button className={`add-to-cart_ ${status}`} type='button' style={{ border: "1px solid #8abc41" }} aria-live='polite' {...props} onClick={handleClick}>
+		<button className={`add-to-cart_ ${status}`} type='button' style={{ border: "1px solid #8abc41" }} aria-live='polite' {...props} onClick={handleClickX}>
 			<span className='removed text' aria-hidden={status !== "removed" ? "true" : "false"}>
 				{status === "removed" ? "Add to Cart" : "Adding..."}
 			</span>
@@ -153,7 +155,7 @@ function ProductDetail() {
 			console.log(error);
 			setProductReturnPolicyDetails(null);
 		});
-	}, []);
+	}, [query.productid]);
 
 	const getStars = (rating) => {
 		switch (rating) {
@@ -277,7 +279,7 @@ function ProductDetail() {
 																return (
 																	<SwiperSlide key={index}>
 																		<div key={item.id} className='slider__item'>
-																			<Image src={item.image} alt={item.name} width={500} height={500} />
+																			<img crossOrigin="anonymous" src={`${globalProductImageAddress}${item.image_link}`} alt={item.name} width={500} height={500} />
 																		</div>
 																	</SwiperSlide>
 																);
@@ -287,7 +289,7 @@ function ProductDetail() {
 														<Swiper slidesPerView={1}>
 															<SwiperSlide>
 																<div className='slider__item'>
-																	<Image src='/app/assets/images/200.svg' alt='Placeholder' width={500} height={500} />
+																	<img src='/app/assets/images/200.svg' alt='Placeholder' width={500} height={500} />
 																</div>
 															</SwiperSlide>
 														</Swiper>
@@ -405,7 +407,8 @@ function ProductDetail() {
 																		unit: {
 																			...productpro,
 																			qty: qty
-																		}
+																		},
+																		bundleId: null
 																	})
 																}>
 																<AddToCart />
@@ -432,7 +435,7 @@ function ProductDetail() {
 													<i className='fas fa-heart'></i>
 												</a> */}
 														</div>
-														<ProductBundle productDetails={productDetails} productId={Number(query.productid)} />
+														{productpro ? <ProductBundle productId={Number(query.productid)} selectedProperty={productpro} /> : <></>}
 													</div>
 												</div>
 											</div>

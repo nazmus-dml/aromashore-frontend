@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import apiUrl from "../config";
+import {apiUrl} from "../config";
 import http from "./httpService";
 const apiEndPoint = apiUrl + "/web/customer/login";
 

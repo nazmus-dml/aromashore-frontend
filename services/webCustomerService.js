@@ -1,6 +1,6 @@
 import http from "./httpService";
-import apiUrl from "../config";
-import {headerWithUserAuthToken} from "./authService";
+import {apiUrl} from "../config";
+import { headerWithUserAuthToken } from "./authService";
 const apiEndPoint = apiUrl + "/web/customer/getall/category";
 
 export function fetchCustomerTypes() {
@@ -38,7 +38,7 @@ export function updateprofilePicture(data, user) {
   );
 }
 
-export function changeProfilePassword(data,user) {
+export function changeProfilePassword(data, user) {
   return http.post(
     apiUrl + `/web/customer/update-password/${user.uid}`,
     data,
@@ -57,11 +57,34 @@ export function getOrderHistoryByCustomerId(customerId) {
   );
 }
 
+export function getCartDetailsByCustomerId(customerId) {
+  return http.get(
+    apiUrl + `/web/customer/shopping-cart/getall/${customerId}`,
+    headerWithUserAuthToken()
+  );
+}
+
 export function placeOrder(payload) {
   console.log(payload)
   return http.post(
     apiUrl + `/web/customer/order/add`,
     payload,
+    headerWithUserAuthToken()
+  );
+}
+
+export function createShoppingCart(payload) {
+  console.log(payload)
+  return http.post(
+    apiUrl + `/web/customer/shopping-cart/add`,
+    payload,
+    headerWithUserAuthToken()
+  );
+}
+
+export function clearShoppingCart(customerId) {
+  return http.get(
+    apiUrl + `/web/customer/shopping-cart/delete/${customerId}`,
     headerWithUserAuthToken()
   );
 }

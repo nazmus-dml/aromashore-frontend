@@ -75,7 +75,7 @@ export default function Index() {
 							<div className='col-12'>
 								<div className='profile_image_background'>
 									<div className='profile_image_box'>
-										<Image className='img-thumbnail mt-4' src={profileImgUrl} alt='Picture of the author' width={150} height={150} />
+										<img className='img-thumbnail mt-4' src={profileImgUrl} alt='Picture of the author' width={150} height={150} />
 										<div
 											className='profile_image'
 											title='Upload Profile Image'

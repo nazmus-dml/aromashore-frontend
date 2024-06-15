@@ -1,19 +1,29 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import Layout from "../layouts/Layout";
-import InstagramSlider from "../components/common/InstagramSlider";
+import { Modal } from "react-bootstrap";
+import { toast } from "react-toastify";
 import Link from "next/link";
 // import { LOAD_TO_CART, INCREMENT_TO_CART_ITEM, DECREMENT_TO_CART_ITEM, DELETE_ITEM_FROM_CART } from "../store/Store";
 import { AppStore } from "../store/AppStore";
 import { calculateCart } from "../services/utilityService";
 import Cookies from "js-cookie";
 import Image from "next/image";
+import { globalProductImageAddress } from '../config';
 
 function Cart() {
 	const router = useRouter();
 	const { cart, increment_TO_CART_ITEM, decrement_TO_CART_ITEM, delete_ITEM_FROM_CART, clearCart } = useContext(AppStore);
 	console.log(cart)
 	let { totalAmount } = calculateCart(cart);
+	const [selectedProductToDelete, setSelectedProductToDelete] = useState(null);
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [showClearAllModal, setShowClearAllModal] = useState(false);
+
+	const deleteFromCart = () => {
+		delete_ITEM_FROM_CART({ product: selectedProductToDelete });
+		setShowDeleteModal(false);
+	}
 
 	return (
 		<Layout title='Cart'>
@@ -56,59 +66,68 @@ function Cart() {
 											<tbody key={i}>
 												<tr>
 													<td className='text-center'>
-														{product.productimages[0] ? <Image src={product.productimages[0]?.image} alt={product.productimages[0]?.name} height={75} width={75} /> : <Image src='/app/assets/images/200.svg' alt='Placeholder' height={75} width={75} />}
+														{product.product_image != '' ? <img crossOrigin="anonymous" src={`${globalProductImageAddress}${product.product_image}`} alt={product.product_name} height={75} width={75} /> : <img src='/app/assets/images/200.svg' alt='Placeholder' height={75} width={75} />}
 													</td>
 													<td>
 														<div className='p-2'>
-															<Link style={{ textWrap: "wrap" }} href={"/products/" + product.id}>
-																{product.name}
+															<Link style={{ textWrap: "wrap" }} href={"/products/" + product.product_id}>
+																{product.product_name}
 															</Link>
 														</div>
 													</td>
 													{/* </tr> */}
-													{/* {product.units.map((unit, i) => ( */}
+													{/* {product.map((unit, i) => ( */}
 													{/* <tr> */}
 													<td className='text-center'>
-														{product.units.size} {product.units.size_unit}
+														{product.size} {product.size_unit}
 													</td>
-													{product.units.sale_price > 0 ? <td className='text-center'>$&nbsp;{product.units.sale_price}</td> : <td className='text-center'>$&nbsp;{product.units.price}</td>}
+													<td className='text-center'>$&nbsp;{product.price}</td>
 													<td className='text-center'>
 														<div className='quantity-controlle1'>
-															<div
-																style={{
-																	display: "flex",
-																	alignItems: "center",
-																	justifyContent: "center",
-																	marginBottom: "5px"
-																}}>
+															{product.bundle_id == null ?
 																<div
-																	onClick={() => {
-																		if (product.units.qty > 1) {
-																			decrement_TO_CART_ITEM({ product });
-																		}
-																	}}
-																	className='btn btn-sm btn-outline-secondary rounded'>
-																	<i className='fas fa-minus'></i>
+																	style={{
+																		display: "flex",
+																		alignItems: "center",
+																		justifyContent: "center",
+																		marginBottom: "5px"
+																	}}>
+																	<div
+																		onClick={() => {
+																			if (product.quantity > 1) {
+																				decrement_TO_CART_ITEM({ product });
+																			}
+																		}}
+																		className='btn btn-sm btn-outline-secondary rounded'>
+																		<i className='fas fa-minus'></i>
+																	</div>
+																	<div className='quantity-controller__number'>{product.quantity}</div>
+																	<div
+																		onClick={() => {
+																			increment_TO_CART_ITEM({ product });
+																		}}
+																		className='btn btn-sm btn-outline-secondary rounded'>
+																		<i className='fas fa-plus'></i>
+																	</div>
+																</div> : <div
+																	style={{
+																		display: "flex",
+																		alignItems: "center",
+																		justifyContent: "center",
+																		marginBottom: "5px"
+																	}}>
+																	<div className='quantity-controller__number'>{product.quantity}</div>
 																</div>
-																<div className='quantity-controller__number'>{product.units.qty}</div>
-																<div
-																	onClick={() => {
-																		increment_TO_CART_ITEM({ product });
-																	}}
-																	className='btn btn-sm btn-outline-secondary rounded'>
-																	<i className='fas fa-plus'></i>
-																</div>
-															</div>
+															}
 														</div>
 													</td>
-													{product.units.sale_price > 0 ? <td className='text-center'>$&nbsp;{product.units.sale_price * product.units.qty}</td> : <td className='text-center'>$&nbsp;{product.units.price * product.units.qty}</td>}
+													<td className='text-center'>$&nbsp;{product.price * product.quantity}</td>
 													<td className='text-center' style={{ marginBottom: "5px" }}>
 														<button
 															className='btn btn-sm btn-outline-danger rounded-circle'
-															onClick={(e) => {
-																delete_ITEM_FROM_CART({
-																	product
-																});
+															onClick={() => {
+																setSelectedProductToDelete(product);
+																setShowDeleteModal(true);
 															}}>
 															<i className='fas fa-times'></i>
 														</button>
@@ -143,9 +162,9 @@ function Cart() {
 											{cart.length > 0 ?
 												<td className='text-end'>
 													<button
-														onClick={(e) => {
-															e.preventDefault();
-															clearCart();
+														type="button"
+														onClick={() => {
+															setShowClearAllModal(true);
 														}}
 														className='btn btn-light'>
 														{totalAmount !== 0 ? (
@@ -201,6 +220,46 @@ function Cart() {
 			</div>
 			{/* <RelatedProduct /> */}
 			{/* <InstagramSlider /> */}
+
+			<Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+				<Modal.Header closeButton>
+					<Modal.Title>Confirmation</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<h4 className="alert alert-danger text-center">Are you Sure?</h4>
+				</Modal.Body>
+				<Modal.Footer>
+					<button type='button' className='btn btn-danger btn-sm' onClick={() => setShowDeleteModal(false)}>
+						<i className='bi bi-x-circle me-2'></i>Close
+					</button>
+					<button type='button' className='btn btn-success btn-sm' onClick={deleteFromCart}>
+						<i className='bi bi-save me-2'></i>Confirm
+					</button>
+				</Modal.Footer>
+			</Modal>
+
+			<Modal show={showClearAllModal} onHide={() => setShowClearAllModal(false)}>
+				<Modal.Header closeButton>
+					<Modal.Title>Confirmation</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<h4 className="alert alert-danger text-center">Are you Sure,<br />you want to remove all cart items?</h4>
+				</Modal.Body>
+				<Modal.Footer>
+					<button type='button' className='btn btn-danger btn-sm' onClick={() => setShowClearAllModal(false)}>
+						<i className='bi bi-x-circle me-2'></i>Close
+					</button>
+					<button type='button' className='btn btn-success btn-sm' onClick={() => { clearCart(); setShowClearAllModal(false) }}>
+						<i className='bi bi-save me-2'></i>Confirm
+					</button>
+				</Modal.Footer>
+			</Modal>
+
+			{/* toast.error('Please fill-up all the fields accordingly', {
+				position: "top-right",
+				autoClose: 5000
+			}); */}
+
 		</Layout>
 	);
 }

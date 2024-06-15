@@ -6,22 +6,22 @@ export function calculateCart(cart = []) {
   // };
 
   // const totalQty = cart.reduce((prev, current) => {
-  //   return prev + subQty(current.units);
+  //   return prev + subQty(current.unit);
   // }, 0);
 
   const totalQty = cart.length;
 
   let subAmount = (unit) => {
     // return units.reduce((initVal, nextitem) => {
-      if (unit.sale_price > 0) {
-        return unit.sale_price * unit.qty;
-      }else{
-        return unit.price * unit.qty;
-      }
+    // if (unit.sale_price > 0) {
+    //   return unit.sale_price * unit.qty;
+    // }else{
+    return unit.price * unit.quantity;
+    // }
   };
 
   const totalAmount = cart.reduce((prev, current) => {
-    return prev + subAmount(current.units);
+    return prev + subAmount(current);
   }, 0);
 
   return { totalQty, totalAmount };

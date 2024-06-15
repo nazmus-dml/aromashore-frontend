@@ -84,7 +84,7 @@ export default function Index({ user, customerData }) {
       customer_company: customerData.company,
       status: 1,
       remarks: "",
-
+      dial_code: customerData.dial_code,
       address_line_one: customerData.customercontact.address_line_one,
       address_line_two: customerData.customercontact.address_line_two,
       city: customerData.customercontact.city,
@@ -197,9 +197,16 @@ export default function Index({ user, customerData }) {
   const handleChange = (e) => {
     var errorsCopy = { ...errors };
     const errorMessage = validateProperty(e.currentTarget);
+    console.log(errorMessage);
     if (errorMessage) errorsCopy[e.currentTarget.name] = errorMessage;
     else delete errorsCopy[e.currentTarget.name];
     setErrors(errorsCopy);
+    let shippingAddressCopy = { ...shippingAddress };
+    shippingAddressCopy[e.currentTarget.name] = e.currentTarget.value;
+    setShippingAddress(shippingAddressCopy);
+  };
+
+  const handleChangeOptional = (e) => {
     let shippingAddressCopy = { ...shippingAddress };
     shippingAddressCopy[e.currentTarget.name] = e.currentTarget.value;
     setShippingAddress(shippingAddressCopy);
@@ -233,27 +240,29 @@ export default function Index({ user, customerData }) {
       let totalWeight = 0;
       const cartProducts = [];
       cart.forEach(cartItem => {
+        console.log(cartItem);
         const cartData = {
-          "variation_id": cartItem.units.id,
-          "price": cartItem.units.price,
-          "size": cartItem.units.size,
-          "size_unit": cartItem.units.size_unit,
-          "quantity": cartItem.units.qty,
-          "weight": cartItem.units.weight,
-          "category_id": cartItem.productcategory.id,
-          "product_id": cartItem.id,
+          "variation_id": cartItem.variation_id,
+          "price": cartItem.price,
+          "size": cartItem.size,
+          "size_unit": cartItem.size_unit,
+          "quantity": cartItem.quantity,
+          "weight": cartItem.weight,
+          "category_id": cartItem.category_id,
+          "product_id": cartItem.product_id,
           "product_no": cartItem.product_no,
-          "product_name": cartItem.name
+          "product_name": cartItem.product_name,
+          "product_image": cartItem.product_image
         };
-        totalWeight += cartItem.units.qty * Number(cartItem.units.weight);
-        // console.log(cartItem.units.qty)
+        totalWeight += cartItem.quantity * Number(cartItem.weight);
+        // console.log(cartItem.quantity)
         cartProducts.push(cartData);
       });
       let shippingAddressCopy = { ...shippingAddress };
       shippingAddressCopy.products = JSON.stringify(cartProducts);
       shippingAddressCopy.amount = totalAmount;
       shippingAddressCopy.total_weight = totalWeight;
-      shippingAddressCopy.customer_name = shippingAddressCopy.firstname + shippingAddressCopy.lastname;
+      shippingAddressCopy.customer_name = shippingAddressCopy.firstname + ' ' + shippingAddressCopy.lastname;
       // setShippingAddress(shippingAddressCopy);
 
       // console.log("all info", shippingAddressCopy);
@@ -261,13 +270,15 @@ export default function Index({ user, customerData }) {
       const errorsCopy = validate({
         customer_id: shippingAddressCopy.customer_id,
         customer_name: shippingAddressCopy.customer_name,
+        firstname: shippingAddressCopy.firstname,
+        lastname: shippingAddressCopy.lastname,
         address_line_one: shippingAddressCopy.address_line_one,
         city_name: shippingAddressCopy.city_name,
         state_name: shippingAddressCopy.state_name,
         zipcode: shippingAddressCopy.zipcode,
         country_name: shippingAddressCopy.country_name,
       });
-      // console.log(errorsCopy)
+      console.log(errorsCopy)
       setErrors(errorsCopy);
       if (errorsCopy) return;
 
@@ -282,7 +293,6 @@ export default function Index({ user, customerData }) {
       } catch (error) {
         console.log(error)
       }
-
     }
   };
 
@@ -322,7 +332,6 @@ export default function Index({ user, customerData }) {
                                     <div className="col-12 col-md-6 mb-2">
                                       <div className="form-group">
                                         <label htmlFor="firstname">
-                                          {" "}
                                           First Name&nbsp;<span className="text-danger">*</span>
                                         </label>
                                         <input
@@ -367,7 +376,7 @@ export default function Index({ user, customerData }) {
                                         </label>
                                         <input
                                           type="text"
-                                          name="address"
+                                          name="address_line_one"
                                           placeholder="Steet address"
                                           value={shippingAddress.address_line_one}
                                           onChange={handleChange}
@@ -387,30 +396,25 @@ export default function Index({ user, customerData }) {
                                         </label>
                                         <input
                                           type="text"
-                                          name="address"
+                                          name="address_line_two"
                                           placeholder="Steet address"
                                           value={shippingAddress.address_line_two}
-                                          onChange={handleChange}
+                                          onChange={handleChangeOptional}
                                           className="form-control"
                                         />
-                                        {errors && errors.address && (
-                                          <div style={{ color: "red" }}>
-                                            {errors.address}
-                                          </div>
-                                        )}
                                       </div>
                                     </div>
                                   </div>
                                   <div className="row">
                                     <div className="col-12 col-md-6 mb-2">
                                       <div className='mb-3'>
-                                        <label className='d-block'>Country</label>
+                                        <label className='d-block'>Country&nbsp;<span className="text-danger">*</span></label>
                                         <Select options={profileCountryList} value={selectedProfileCountry} onChange={(event) => handleProfileCountryInputChange(event)} required />
                                       </div>
                                     </div>
                                     <div className="col-12 col-md-6 mb-2">
                                       <div className='mb-3'>
-                                        <label className='d-block'>State/Division</label>
+                                        <label className='d-block'>State/Division&nbsp;<span className="text-danger">*</span></label>
                                         {shippingAddress.country !== "" && profileStateList.length > 0 ? (
                                           <Select options={profileStateList} value={selectedProfileState} onChange={(event) => handleProfileStateInputChange(event)} required />
                                         ) : (
@@ -420,7 +424,7 @@ export default function Index({ user, customerData }) {
                                     </div>
                                     <div className="col-12 col-md-6 mb-2">
                                       <div className='mb-3'>
-                                        <label className='d-block'>City</label>
+                                        <label className='d-block'>City&nbsp;<span className="text-danger">*</span></label>
                                         {shippingAddress.state !== "" && profileCityList.length > 0 ? (
                                           <Select options={profileCityList} value={selectedProfileCity} onChange={(event) => handleProfileCityInputChange(event)} required />
                                         ) : (
@@ -450,20 +454,15 @@ export default function Index({ user, customerData }) {
                                     </div>
                                     <div className="col-12 col-md-12 mb-2">
                                       <div className="form-group">
-                                        <label>Order note</label>
+                                        <label>Order Note</label>
                                         <input
                                           type="text"
-                                          name="order_note"
-                                          placeholder="Note about your order, e.g, special noe for delivery"
-                                          value={shippingAddress.order_note}
-                                          onChange={handleChange}
+                                          name="remarks"
+                                          placeholder="Note about your order, e.g, special note for delivery"
+                                          value={shippingAddress.remarks}
+                                          onChange={handleChangeOptional}
                                           className="form-control"
                                         />
-                                        {errors && errors.order_note && (
-                                          <div style={{ color: "red" }}>
-                                            {errors.order_note}
-                                          </div>
-                                        )}
                                       </div>
                                     </div>
                                   </div>
@@ -494,18 +493,14 @@ export default function Index({ user, customerData }) {
                                 {cart.map((product, i) =>
                                   <tr key={i}>
                                     <td>
-                                      <span>{product.units.qty}&nbsp;x&nbsp;</span>
-                                      {product.name} ({product.units.size}-{product.units.size_unit})
+                                      <span>{product.quantity}&nbsp;x&nbsp;</span>
+                                      {product.name} ({product.size}-{product.size_unit})
                                     </td>
                                     <td className="text-right">
-                                      $&nbsp;{product.units.sale_price > 0
-                                        ? product.units.sale_price
-                                        : product.units.price}
+                                      $&nbsp;{product.price}
                                     </td>
                                     <td className="text-right">
-                                      $&nbsp;{product.units.sale_price > 0
-                                        ? product.units.sale_price * product.units.qty
-                                        : product.units.price * product.units.qty}
+                                      $&nbsp;{product.price * product.quantity}
                                     </td>
                                   </tr>
                                 )}

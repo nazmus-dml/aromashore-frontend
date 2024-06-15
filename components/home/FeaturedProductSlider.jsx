@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Product from "../shop/Product";
 import { Swiper, SwiperSlide } from "swiper/react";
 import axios from "axios";
-import apiUrl from "../../config";
+import {apiUrl} from "../../config";
 
 const FeaturedProductSlider = () => {
   const [productList, setProductList] = useState([]);

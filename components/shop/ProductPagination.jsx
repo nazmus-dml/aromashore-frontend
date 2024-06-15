@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { useRouter } from "next/router";
 import { usePagination, DOTS } from "./usePagination";
 import { AppContext, LOAD_PROODUCTS } from "../../store/Store";
-import apiUrl from "../../config";
+import {apiUrl} from "../../config";
 import axios from "axios";
 
 function ProductPagination() {

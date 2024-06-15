@@ -14,6 +14,7 @@ const ORDER_STATUS = {
   0 : 'Pending',
   1 : 'In Progress',
   2 : 'Done',
+  99 : 'On Cart',
 }
 
 export default function OrderInfo({ user, profile = [] }) {
@@ -59,8 +60,8 @@ export default function OrderInfo({ user, profile = [] }) {
 									<tbody>
 										{orderList.map((order) => (
 											<tr key={order.id}>
-												<td>{order.order_no}</td>
-												<td>{order.order_date}</td>
+												<td>{order.order_no ? order.order_no : '--'}</td>
+												<td>{order.order_date ? order.order_date : '--'}</td>
 												<td>{order.amount}</td>
 												<td>{ORDER_STATUS[order.status]}</td>
   											<td></td>

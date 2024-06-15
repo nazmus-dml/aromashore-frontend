@@ -1,3 +1,9 @@
-let apiUrl = "https://primesmell.com/api";
-// let apiUrl = "http://localhost:3303/api";
-export default apiUrl;
+// Dev Server
+const apiUrl = "http://localhost:3303/api";
+const globalProductImageAddress = 'http://localhost:3303/product/';
+
+// Prod Server
+// const apiUrl = "https://primesmell.com/api";
+// const globalProductImageAddress = 'https://primesmell.com/product/';
+
+export { apiUrl, globalProductImageAddress };

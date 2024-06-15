@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 // import { AppContext } from "../../store/Store";
 import axios from "axios";
-import apiUrl from "../../config";
+import {apiUrl} from "../../config";
 
 function ProductCategories() {
 	const [categoryList, setCategoryList] = useState([]);

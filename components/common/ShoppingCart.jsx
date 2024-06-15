@@ -6,10 +6,11 @@ import { calculateCart } from "../../services/utilityService";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { globalProductImageAddress } from '../../config';
 
 const ShoppingCart = ({ isCartOpen }) => {
 	const { cart, delete_ITEM_FROM_CART } = useContext(AppStore);
-	console.log(cart)
+	console.log('ShoppingCart --------->', cart)
 	const router = useRouter();
 	const drawerStyle = () => {
 		if (isCartOpen) {
@@ -42,7 +43,7 @@ const ShoppingCart = ({ isCartOpen }) => {
 									cart.map((product, i) =>
 										<div key={i} className='cus_cart-item'>
 											<div className='cus_cart-item__image'>
-												{product.productimages[0] ? <Image src={product.productimages[0]?.image} alt={product.productimages[0]?.name} height={75} width={75} /> : <Image src='/app/assets/images/200.svg' alt='Placeholder' height={75} width={75} />}
+												{product.product_image != '' ? <img crossOrigin="anonymous" src={`${globalProductImageAddress}${product.product_image}`} alt={product.product_name} height={75} width={75} /> : <img src='/app/assets/images/200.svg' alt='Placeholder' height={75} width={75} />}
 											</div>
 											<div className='cus_cart-item__info'>
 												<div key={i}>
@@ -50,18 +51,18 @@ const ShoppingCart = ({ isCartOpen }) => {
 														<li>
 															Size&nbsp;
 															<p>
-																{product.units.size}&nbsp;{product.units.size_unit}
+																{product.size}&nbsp;{product.size_unit}
 															</p>
 														</li>
 														<li>
 															Price&nbsp;
-															<p>{product.units.sale_price > 0 ? product.units.sale_price : product.units.price}</p>
+															<p>{product.price}</p>
 														</li>
 														<li>
 															Qty.&nbsp;
-															<p>{product.units.qty}</p>
+															<p>{product.quantity}</p>
 														</li>
-														<li>
+														{/* <li>
 															<a
 																onClick={(e) => {
 																	delete_ITEM_FROM_CART({
@@ -73,7 +74,7 @@ const ShoppingCart = ({ isCartOpen }) => {
 																href='#'>
 																<i className='far fa-times-circle'></i>
 															</a>
-														</li>
+														</li> */}
 													</ul>
 												</div>
 											</div>

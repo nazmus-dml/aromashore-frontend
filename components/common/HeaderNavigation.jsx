@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import Cookies from "js-cookie";
 import axios from "axios";
-import apiUrl from "../../config";
+import {apiUrl} from "../../config";
 import { Card, ListGroup } from "react-bootstrap";
 import { AppStore } from "../../store/AppStore";
 import { calculateCart } from "../../services/utilityService";
@@ -30,7 +30,7 @@ export default function HeaderNavigation({ openCart }) {
 
 	// useEffect(() => {},[])
 	useEffect(() => {
-		console.log('header navigation ------->>', user, cart, openCart);
+		// console.log('header navigation ------->>', user, cart, openCart);
 		axios.get(apiUrl + "/web/get/webmenu").then((response) => {
 			// console.log("waiting end", response);
 			if (response.data.appStatus) {
@@ -129,7 +129,7 @@ export default function HeaderNavigation({ openCart }) {
 				<div className='container-fluid'>
 					<Link href='/'>
 						<span className='navbar-brand me-2'>
-							<Image className='logo' src='/app/assets/images/logo-white.png' alt='Logo' width={50} height={44} />
+							<img className='logo' src='/app/assets/images/logo-white.png' alt='Logo' width={50} height={44} />
 						</span>
 					</Link>
 					<button className='navbar-toggler' type='button' data-bs-toggle='offcanvas' data-bs-target='#offcanvasNavbar' aria-controls='offcanvasNavbar' aria-label='Toggle navigation'>
@@ -147,7 +147,7 @@ export default function HeaderNavigation({ openCart }) {
 										openCart(true);
 										e.preventDefault();
 									}}>
-									<i className='fas fa-shopping-bag'>{totalQty > 0 ? <span className='cart__quantity'>{totalQty}</span> : <></>}</i>
+									<i className='fas fa-shopping-bag'></i>{totalQty > 0 ? <span className='cart__quantity'>{totalQty}</span> : <></>}
 								</button>
 								{!user && (
 									<Link href='/login'>
@@ -224,7 +224,7 @@ export default function HeaderNavigation({ openCart }) {
 											openCart(true);
 											e.preventDefault();
 										}}>
-										<i className='fas fa-shopping-bag'>{totalQty > 0 ? <span className='cart__quantity'>{totalQty}</span> : <></>}</i>
+										<i className='fas fa-shopping-bag'></i>{totalQty > 0 ? <span className='cart__quantity'>{totalQty}</span> : <></>}
 									</button>
 								</li>
 								{!user && (
@@ -265,12 +265,12 @@ export default function HeaderNavigation({ openCart }) {
 								</li>
 								<div className='dropdown'>
 									{menuList?.map((menu, i) => (
-										<li className='nav-item'>
+										<li className='nav-item' key={i}>
 											<a className='nav-link' onClick={() => handleSelectMobileMenu(menu)} href='#' data-bs-toggle='dropdown' aria-expanded='false'>
 												{menu.name}
 												<i className='fas fa-angle-down ms-2'></i>
 											</a>
-											<div className='dropdown-menu ps-3'>
+											<ul className='dropdown-menu ps-3'>
 												<li data-bs-dismiss='offcanvas' onClick={() => goToSelectedCategory('all')}>
 													All
 												</li>
@@ -279,7 +279,7 @@ export default function HeaderNavigation({ openCart }) {
 														{pcat.category_name}
 													</li>
 												)}
-											</div>
+											</ul>
 										</li>
 									))}
 								</div>

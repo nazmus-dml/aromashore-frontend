@@ -1,4 +1,4 @@
-import apiUrl from "../config";
+import {apiUrl} from "../config";
 import {headerWithUserAuthToken} from "./authService";
 import httpService from "./httpService";
 

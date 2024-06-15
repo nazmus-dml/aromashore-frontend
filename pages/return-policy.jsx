@@ -1,7 +1,7 @@
 import React from "react";
 import Layout from "../layouts/Layout";
 import axios from "axios";
-import apiUrl from "../config";
+import {apiUrl} from "../config";
 import parse from "html-react-parser";
 import Link from "next/link";
 

@@ -36,7 +36,7 @@ function Login() {
 		if (errorsCopy) return;
 		try {
 			let data = await login(user);
-			console.log('login---->', data)
+			// console.log('login---->', data)
 			toast(data.appMessage);
 			if (data.appStatus == false) return;
 			setUSER(data.appData);
@@ -111,9 +111,9 @@ function Login() {
 export default Login;
 
 export async function getServerSideProps(context) {
-	console.log("LOGIN -- getServerSideProps", context.req.headers.referer);
+	// console.log("LOGIN -- getServerSideProps", context.req.headers.referer);
 	const previousUrl = context.req.headers.referer ? context.req.headers.referer : "/";
-	console.log(previousUrl);
+	// console.log(previousUrl);
 	try {
 		const user = context.req.cookies.user ? JSON.parse(context.req.cookies.user) : null;
 		if (user) {

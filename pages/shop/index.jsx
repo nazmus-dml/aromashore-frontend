@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import Layout from "../../layouts/Layout";
-import apiUrl from "../../config";
+import {apiUrl} from "../../config";
 import axios from "axios";
 import { useRouter } from "next/router";
 import Link from "next/link";

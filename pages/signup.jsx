@@ -6,7 +6,7 @@ import { register, validateUsername } from "../services/userService";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
-import apiUrl from "../config";
+import {apiUrl} from "../config";
 import axios from "axios";
 
 function Signup() {

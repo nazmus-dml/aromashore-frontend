@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import SlickSlider from "react-slick";
 import Link from "next/link";
 import axios from "axios";
-import apiUrl from "../../config";
+import {apiUrl} from "../../config";
 import Product from "../shop/Product";
 
 const NextArrow = ({ onClick }) => {

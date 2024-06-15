@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import axios from "axios";
-import apiUrl from "../../config";
+import {apiUrl} from "../../config";
 import Image from "next/image";
 
 export default function Slider() {
@@ -35,7 +35,7 @@ export default function Slider() {
 											<div className='slider__carousel__item slider-1' key={index}>
 												<div className='container'>
 													<div className='slider-background'>
-														<Image className='slider-background' src={banner.image} alt={banner.title} layout='fill' />
+														<img className='slider-background' src={banner.image} alt={banner.title} layout='fill' />
 													</div>
 													<div className='slider-content'>
 														<h5 style={{ color: "#202020", marginBottom: 0 }} className='slider-content__subtitle' data-animation-in='fadeInUp' data-animation-delay='0.1'>

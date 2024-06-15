@@ -1,5 +1,5 @@
 import http from "./httpService";
-import apiUrl from "../config";
+import {apiUrl} from "../config";
 
 const apiRegisterEndPoint = apiUrl + "/web/customer/register";
 const apiForgotPasswordEndPoint = apiUrl + "/web/customer/forgot-password";

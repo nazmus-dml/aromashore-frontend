@@ -39,7 +39,7 @@ function Wishlist() {
 										<td>
 											<div className='wishlist-product'>
 												<div className='wishlist-product__image'>
-													<Image src='/app/assets/images/product/1.png' alt='The expert mascaraa' layout='fill' />
+													<img src='/app/assets/images/product/1.png' alt='The expert mascaraa' layout='fill' />
 												</div>
 												<div className='wishlist-product__content'>
 													<h5>eyes</h5>
@@ -62,7 +62,7 @@ function Wishlist() {
 										<td>
 											<div className='wishlist-product'>
 												<div className='wishlist-product__image'>
-													<Image src='/app/assets/images/product/2.png' alt='Velvet Melon High Intensity' layout='fill' />
+													<img src='/app/assets/images/product/2.png' alt='Velvet Melon High Intensity' layout='fill' />
 												</div>
 												<div className='wishlist-product__content'>
 													<h5>eyes</h5>
